@@ -12,12 +12,12 @@ export default {
       },
       colors: {
         brand: {
-          dark: '#0D0D0D',
-          charcoal: '#1A1A1A',
-          mid: '#2A2A2A',
-          accent: '#E8FF00',
+          dark: '#1A1A1A',
+          charcoal: '#333333',
+          mid: '#666666',
+          accent: '#00AEEF',
           muted: '#666666',
-          light: '#F5F5F0',
+          light: '#F8F8F8',
         },
       },
     },
