@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { motion, useInView, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 
 // Formspree form ID create a form at formspree.io, set brendp51@gmail.com as recipient for testing, then replace with your form ID
 const FORMSPREE_FORM_ID = "replace-me";
@@ -76,6 +76,294 @@ function PlaceholderImage({ className = "", label = "Image" }) {
           </svg>
         </div>
         <p className="text-[#666] text-xs font-body tracking-widest uppercase">{label}</p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// GRID CANVAS — Animated hero background
+// ============================================================
+const BRAND_RED = "230, 57, 70"; // #E63946
+const BRAND_CYAN = "0, 174, 239"; // #00AEEF
+
+function GridCanvas({ width, height, mouseX, mouseY }) {
+  const canvasRef = useRef(null);
+  const frameRef = useRef(null);
+  const startTime = useRef(Date.now());
+  const nodes = useRef([]);
+
+  useEffect(() => {
+    const cols = 14;
+    const rows = 9;
+    const pts = [];
+    for (let r = 0; r <= rows; r++) {
+      for (let c = 0; c <= cols; c++) {
+        pts.push({
+          x: c / cols,
+          y: r / rows,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.4 + Math.random() * 0.8,
+          size: 1 + Math.random() * 1.5,
+          bright: Math.random() > 0.85,
+        });
+      }
+    }
+    nodes.current = pts;
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    const draw = () => {
+      const t = (Date.now() - startTime.current) / 1000;
+      const w = canvas.width;
+      const h = canvas.height;
+      const mx = typeof mouseX === "number" ? mouseX / w : 0.5;
+      const my = typeof mouseY === "number" ? mouseY / h : 0.5;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const cols = 14;
+      const rows = 9;
+      const cellW = w / cols;
+      const cellH = h / rows;
+      const drawProgress = Math.min(1, (t - 0.3) / 2.5);
+
+      for (let c = 0; c <= cols; c++) {
+        const x = c * cellW;
+        const distFromMouse = Math.abs(c / cols - mx);
+        const glow = Math.max(0, 1 - distFromMouse * 4) * 0.5;
+        const alpha = (0.06 + glow * 0.12) * drawProgress;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h * drawProgress);
+        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+        ctx.lineWidth = c % 7 === 0 ? 0.8 : 0.4;
+        ctx.stroke();
+      }
+
+      for (let r = 0; r <= rows; r++) {
+        const y = r * cellH;
+        const distFromMouse = Math.abs(r / rows - my);
+        const glow = Math.max(0, 1 - distFromMouse * 4) * 0.5;
+        const alpha = (0.06 + glow * 0.12) * drawProgress;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w * drawProgress, y);
+        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+        ctx.lineWidth = r % 4 === 0 ? 0.8 : 0.4;
+        ctx.stroke();
+      }
+
+      nodes.current.forEach((node) => {
+        if (!node || drawProgress < node.y) return;
+        const nx = node.x * w;
+        const ny = node.y * h;
+        const pulse = 0.5 + 0.5 * Math.sin(t * node.speed + node.phase);
+        const dx = node.x - mx;
+        const dy = node.y - my;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const mouseGlow = Math.max(0, 1 - dist * 3.5);
+        const isRed = node.bright && node.phase > Math.PI;
+        const isCyan = node.bright && node.phase <= Math.PI;
+        let r, g, b;
+        if (mouseGlow > 0.3) {
+          r = 230; g = 57; b = 70;
+        } else if (isRed) {
+          r = 230; g = 57; b = 70;
+        } else if (isCyan) {
+          r = 0; g = 174; b = 239;
+        } else {
+          r = 255; g = 255; b = 255;
+        }
+        const alpha = (0.15 + pulse * 0.25 + mouseGlow * 0.6) * drawProgress;
+        const size = node.size * (1 + mouseGlow * 2.5 + pulse * 0.3);
+        if (alpha > 0.2 || mouseGlow > 0.1) {
+          const grd = ctx.createRadialGradient(nx, ny, 0, nx, ny, size * 6);
+          grd.addColorStop(0, `rgba(${r},${g},${b},${alpha * 0.4})`);
+          grd.addColorStop(1, `rgba(${r},${g},${b},0)`);
+          ctx.beginPath();
+          ctx.arc(nx, ny, size * 6, 0, Math.PI * 2);
+          ctx.fillStyle = grd;
+          ctx.fill();
+        }
+        ctx.beginPath();
+        ctx.arc(nx, ny, size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${r},${g},${b},${Math.min(1, alpha * 2.5)})`;
+        ctx.fill();
+      });
+
+      const scanY = ((t * 0.12) % 1) * h;
+      const scanGrd = ctx.createLinearGradient(0, scanY - 80, 0, scanY + 80);
+      scanGrd.addColorStop(0, `rgba(${BRAND_RED},0)`);
+      scanGrd.addColorStop(0.5, `rgba(${BRAND_RED},0.04)`);
+      scanGrd.addColorStop(1, `rgba(${BRAND_RED},0)`);
+      ctx.fillStyle = scanGrd;
+      ctx.fillRect(0, scanY - 80, w, 160);
+      ctx.beginPath();
+      ctx.moveTo(0, scanY);
+      ctx.lineTo(w, scanY);
+      ctx.strokeStyle = `rgba(${BRAND_RED},0.15)`;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+
+      frameRef.current = requestAnimationFrame(draw);
+    };
+
+    frameRef.current = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(frameRef.current);
+  }, [mouseX, mouseY, width, height]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={width}
+      height={height}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+    />
+  );
+}
+
+function HeroBackground({ children }) {
+  const containerRef = useRef(null);
+  const [dims, setDims] = useState({ w: 1440, h: 900 });
+  const rawX = useMotionValue(typeof window !== "undefined" ? window.innerWidth / 2 : 720);
+  const rawY = useMotionValue(typeof window !== "undefined" ? window.innerHeight / 2 : 450);
+  const mouseX = useSpring(rawX, { stiffness: 60, damping: 20 });
+  const mouseY = useSpring(rawY, { stiffness: 60, damping: 20 });
+  const [mxVal, setMxVal] = useState(720);
+  const [myVal, setMyVal] = useState(450);
+
+  useEffect(() => {
+    const update = () => {
+      if (containerRef.current) {
+        setDims({ w: containerRef.current.offsetWidth, h: containerRef.current.offsetHeight });
+      }
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  useEffect(() => {
+    const move = (e) => {
+      rawX.set(e.clientX);
+      rawY.set(e.clientY);
+    };
+    window.addEventListener("mousemove", move);
+    return () => window.removeEventListener("mousemove", move);
+  }, [rawX, rawY]);
+
+  useEffect(() => {
+    const unsubX = mouseX.on("change", (v) => setMxVal(v));
+    const unsubY = mouseY.on("change", (v) => setMyVal(v));
+    return () => { unsubX(); unsubY(); };
+  }, [mouseX, mouseY]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="absolute inset-0 overflow-hidden"
+      style={{ background: "#0a0a0a" }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `
+            radial-gradient(ellipse 80% 60% at 50% 100%, rgba(15,15,15,0) 0%, #0a0a0a 70%),
+            radial-gradient(ellipse 120% 80% at 50% 50%, #111 40%, #0a0a0a 100%)
+          `,
+          zIndex: 1,
+        }}
+      />
+      <div className="absolute inset-0" style={{ zIndex: 2 }}>
+        <GridCanvas width={dims.w} height={dims.h} mouseX={mxVal} mouseY={myVal} />
+      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, delay: 1 }}
+        className="absolute pointer-events-none"
+        style={{
+          bottom: -120,
+          left: -120,
+          width: 480,
+          height: 480,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, rgba(${BRAND_RED},0.18) 0%, transparent 70%)`,
+          zIndex: 3,
+        }}
+      />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, delay: 1.3 }}
+        className="absolute pointer-events-none"
+        style={{
+          top: -80,
+          right: -80,
+          width: 400,
+          height: 400,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, rgba(${BRAND_CYAN},0.1) 0%, transparent 70%)`,
+          zIndex: 3,
+        }}
+      />
+      <motion.div
+        className="absolute pointer-events-none"
+        style={{
+          left: mouseX,
+          top: mouseY,
+          x: "-50%",
+          y: "-50%",
+          width: 600,
+          height: 600,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, rgba(${BRAND_RED},0.06) 0%, transparent 65%)`,
+          zIndex: 4,
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 5,
+          backgroundImage: `repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 3px,
+            rgba(255,255,255,0.008) 3px,
+            rgba(255,255,255,0.008) 4px
+          )`,
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 6,
+          background: `radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(5,5,5,0.7) 100%)`,
+        }}
+      />
+      <div
+        className="absolute left-0 right-0 bottom-0 pointer-events-none"
+        style={{
+          height: "35%",
+          zIndex: 7,
+          background: "linear-gradient(to top, #0a0a0a 0%, transparent 100%)",
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.045]"
+        style={{
+          zIndex: 8,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundSize: "120px",
+        }}
+      />
+      <div className="relative w-full h-full" style={{ zIndex: 10 }}>
+        {children}
       </div>
     </div>
   );
@@ -175,83 +463,81 @@ function Nav() {
 // ============================================================
 function Hero() {
   return (
-    <section className="relative min-h-screen bg-white flex items-end overflow-hidden">
-      {/* Background image placeholder */}
-      <div className="absolute inset-0 overflow-hidden">
-        <PlaceholderImage className="w-full h-full rounded-none" label="Hero Full bleed brand/fabrication shot" />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent" />
-      </div>
+    <section className="relative min-h-screen flex items-end overflow-hidden">
+      <div className="absolute inset-0">
+        <HeroBackground>
+          <div className="flex flex-col justify-end h-full max-w-7xl mx-auto px-6 pb-24 pt-40">
+            {/* Accent line */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1.2, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              className="absolute top-0 left-0 right-0 h-px bg-[#00AEEF] origin-left"
+            />
 
-      {/* Accent line */}
-      <motion.div
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ duration: 1.2, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-        className="absolute top-0 left-0 right-0 h-px bg-[#00AEEF] origin-left"
-      />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pb-24 pt-40">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={stagger}
-          className="max-w-4xl"
-        >
-          <motion.p
-            variants={fadeUp}
-            className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-6"
-          >
-            Signage & Branding Cape Town
-          </motion.p>
-
-          <motion.h1
-            variants={fadeUp}
-            className="font-display text-[clamp(4rem,12vw,10rem)] leading-none text-[#1A1A1A] mb-8 tracking-wider"
-          >
-            YOUR BRAND<br />
-            <span className="text-[#00AEEF]">DESERVES</span><br />
-            TO BE SEEN.
-          </motion.h1>
-
-          <motion.p
-            variants={fadeUp}
-            className="font-body text-[#666] text-lg md:text-xl max-w-xl leading-relaxed mb-12"
-          >
-            From exhibition stands to vehicle wraps we build the kind of presence that stops people in their tracks.
-          </motion.p>
-
-          <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-            <a
-              href="#contact"
-              className="group inline-flex items-center gap-3 bg-[#00AEEF] text-white font-body font-medium text-sm tracking-widest uppercase px-8 py-4 hover:bg-[#0099D4] transition-colors duration-300"
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={stagger}
+              className="max-w-4xl relative"
             >
-              Let's build something
-              <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
-            </a>
-            <a
-              href="#services"
-              className="inline-flex items-center gap-3 border border-[#1A1A1A] text-[#1A1A1A] font-body text-sm tracking-widest uppercase px-8 py-4 hover:border-[#00AEEF] hover:text-[#00AEEF] transition-colors duration-300"
-            >
-              See our work
-            </a>
+              <motion.p
+                variants={fadeUp}
+                className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-6"
+              >
+                Signage & Branding Cape Town
+              </motion.p>
+
+              <motion.h1
+                variants={fadeUp}
+                className="font-display text-[clamp(4rem,12vw,10rem)] leading-none text-white mb-8 tracking-wider"
+              >
+                YOUR BRAND<br />
+                <span className="text-[#00AEEF]">DESERVES</span><br />
+                TO BE SEEN.
+              </motion.h1>
+
+              <motion.p
+                variants={fadeUp}
+                className="font-body text-white/70 text-lg md:text-xl max-w-xl leading-relaxed mb-12"
+              >
+                From exhibition stands to vehicle wraps we build the kind of presence that stops people in their tracks.
+              </motion.p>
+
+              <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
+                <a
+                  href="#contact"
+                  className="group inline-flex items-center gap-3 bg-[#00AEEF] text-white font-body font-medium text-sm tracking-widest uppercase px-8 py-4 hover:bg-[#0099D4] transition-colors duration-300"
+                >
+                  Let's build something
+                  <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
+                </a>
+                <a
+                  href="#services"
+                  className="inline-flex items-center gap-3 border border-white/60 text-white font-body text-sm tracking-widest uppercase px-8 py-4 hover:border-[#00AEEF] hover:text-[#00AEEF] transition-colors duration-300"
+                >
+                  See our work
+                </a>
+              </motion.div>
+            </motion.div>
+          </div>
+
+          {/* Scroll indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2 }}
+            className="absolute bottom-8 right-8 flex flex-col items-center gap-2"
+          >
+            <span className="font-body text-white/60 text-xs tracking-widest uppercase rotate-90 origin-center">Scroll</span>
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-px h-12 bg-gradient-to-b from-[#00AEEF] to-transparent"
+            />
           </motion.div>
-        </motion.div>
+        </HeroBackground>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="absolute bottom-8 right-8 flex flex-col items-center gap-2"
-      >
-        <span className="font-body text-[#666] text-xs tracking-widest uppercase rotate-90 origin-center">Scroll</span>
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-px h-12 bg-gradient-to-b from-[#00AEEF] to-transparent"
-        />
-      </motion.div>
     </section>
   );
 }
