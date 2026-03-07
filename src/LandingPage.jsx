@@ -673,7 +673,7 @@ function Hero() {
     <section className="relative min-h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <HeroBackground>
-          <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 py-16 text-center">
+          <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 pt-20 pb-12 text-center">
             {/* Accent line */}
             <motion.div
               initial={{ scaleX: 0 }}
@@ -690,14 +690,14 @@ function Hero() {
             >
               <motion.p
                 variants={fadeUp}
-                className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-4"
+                className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-3"
               >
                 Signage & Branding Cape Town
               </motion.p>
 
               <motion.h1
                 variants={fadeUp}
-                className="font-display text-[clamp(4rem,12vw,10rem)] leading-none text-[#1A1A1A] mb-6 tracking-wider"
+                className="font-display text-[clamp(3.5rem,11vw,9rem)] leading-none text-[#1A1A1A] mb-5 tracking-wider"
               >
                 YOUR BRAND<br />
                 <span className="text-[#00AEEF]">DESERVES</span><br />
@@ -706,7 +706,7 @@ function Hero() {
 
               <motion.p
                 variants={fadeUp}
-                className="font-body text-[#666] text-lg md:text-xl max-w-xl leading-relaxed mb-10 mx-auto"
+                className="font-body text-[#666] text-lg md:text-xl max-w-xl leading-relaxed mb-8 mx-auto"
               >
                 From exhibition stands to vehicle wraps we build the kind of presence that stops people in their tracks.
               </motion.p>
@@ -757,7 +757,7 @@ function HeroDark() {
     <section id="home-v2" className="relative min-h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <HeroBackgroundDark>
-          <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 py-16 text-center">
+          <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 pt-20 pb-12 text-center">
             {/* Accent line */}
             <motion.div
               initial={{ scaleX: 0 }}
@@ -774,14 +774,14 @@ function HeroDark() {
             >
               <motion.p
                 variants={fadeUp}
-                className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-4"
+                className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-3"
               >
                 Signage & Branding Cape Town
               </motion.p>
 
               <motion.h1
                 variants={fadeUp}
-                className="font-display text-[clamp(4rem,12vw,10rem)] leading-none text-white mb-6 tracking-wider"
+                className="font-display text-[clamp(3.5rem,11vw,9rem)] leading-none text-white mb-5 tracking-wider"
               >
                 YOUR BRAND<br />
                 <span className="text-[#00AEEF]">DESERVES</span><br />
@@ -790,7 +790,7 @@ function HeroDark() {
 
               <motion.p
                 variants={fadeUp}
-                className="font-body text-white/70 text-lg md:text-xl max-w-xl leading-relaxed mb-10 mx-auto"
+                className="font-body text-white/70 text-lg md:text-xl max-w-xl leading-relaxed mb-8 mx-auto"
               >
                 From exhibition stands to vehicle wraps we build the kind of presence that stops people in their tracks.
               </motion.p>
