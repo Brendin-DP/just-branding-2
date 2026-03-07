@@ -257,36 +257,120 @@ function Hero() {
 }
 
 // ============================================================
-// SERVICES GRID — titles only
+// SERVICES GRID — visual cards with icons
 // ============================================================
 const services = [
-  { id: "exhibitions", label: "Exhibition & Event Branding", number: "01" },
-  { id: "signage", label: "Signage & Site Branding", number: "02" },
-  { id: "vehicles", label: "Vehicle Branding", number: "03" },
-  { id: "merch", label: "Merchandise & Apparel", number: "04" },
-  { id: "fabrication", label: "Custom Fabrication", number: "05" },
+  {
+    id: "exhibitions",
+    label: "Exhibition & Event Branding",
+    number: "01",
+    tagline: "Own the room",
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <rect x="8" y="20" width="32" height="20" rx="2" />
+        <path d="M12 20V14a2 2 0 012-2h20a2 2 0 012 2v6" />
+        <path d="M24 28v4" />
+        <path d="M20 32h8" />
+      </svg>
+    ),
+  },
+  {
+    id: "signage",
+    label: "Signage & Site Branding",
+    number: "02",
+    tagline: "Make every wall work",
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <rect x="6" y="14" width="36" height="24" rx="2" />
+        <path d="M12 22h24" />
+        <path d="M12 28h16" />
+        <circle cx="18" cy="34" r="2" />
+      </svg>
+    ),
+  },
+  {
+    id: "vehicles",
+    label: "Vehicle Branding",
+    number: "03",
+    tagline: "Every drive is a billboard",
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <path d="M8 28l4-12h24l4 12" />
+        <path d="M8 28H6a2 2 0 01-2-2v-4a2 2 0 012-2h2" />
+        <path d="M40 28h2a2 2 0 002-2v-4a2 2 0 00-2-2h-2" />
+        <path d="M8 32h32" />
+        <circle cx="14" cy="36" r="3" />
+        <circle cx="34" cy="36" r="3" />
+      </svg>
+    ),
+  },
+  {
+    id: "merch",
+    label: "Merchandise & Apparel",
+    number: "04",
+    tagline: "Wear it proud",
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <path d="M16 12l8-4 8 4" />
+        <path d="M24 8v32" />
+        <path d="M16 12v24a2 2 0 002 2h12a2 2 0 002-2V12" />
+        <path d="M8 20h4l2 8 2-8h4" />
+      </svg>
+    ),
+  },
+  {
+    id: "fabrication",
+    label: "Custom Fabrication",
+    number: "05",
+    tagline: "If you can picture it",
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <path d="M14 38l-4-8 4-8" />
+        <path d="M34 38l4-8-4-8" />
+        <path d="M24 10v28" />
+        <path d="M14 22h20" />
+        <path d="M18 14l6-4 6 4" />
+        <circle cx="24" cy="22" r="4" />
+      </svg>
+    ),
+  },
 ];
 
 function ServicesGrid() {
   return (
-    <section id="services" className="bg-[#F8F8F8] border-t border-[#E5E5E5] py-20">
+    <section id="services" className="bg-[#F8F8F8] border-t border-[#E5E5E5] py-20 lg:py-28">
       <div className="max-w-7xl mx-auto px-6">
-        <AnimatedSection>
-          <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase mb-12">What we do</p>
+        <AnimatedSection className="text-center mb-16">
+          <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase mb-4">What we do</p>
+          <h2 className="font-display text-[clamp(2.5rem,5vw,4rem)] text-[#1A1A1A] tracking-wider leading-none">
+            BUILT TO<br />SHOW UP.
+          </h2>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 border-l border-[#E5E5E5]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, i) => (
             <AnimatedSection key={service.id} delay={i * 0.08}>
               <a
                 href={`#${service.id}`}
-                className="group block border-r border-b border-[#E5E5E5] p-8 hover:bg-[#F8F8F8] transition-colors duration-300"
+                className="group block bg-white border border-[#E5E5E5] rounded-xl p-8 hover:border-[#00AEEF]/30 hover:shadow-lg hover:shadow-[#00AEEF]/5 transition-all duration-300 overflow-hidden relative"
               >
-                <span className="font-body text-[#999] text-xs tracking-widest block mb-6">{service.number}</span>
-                <span className="font-display text-[#1A1A1A] text-xl tracking-wider group-hover:text-[#00AEEF] transition-colors duration-300 leading-tight">
+                {/* Accent corner — red for visual interest */}
+                <div className="absolute top-0 right-0 w-20 h-20 border-l-2 border-t-2 border-brand-red/30 rounded-tl-xl -translate-y-1 translate-x-1 group-hover:border-brand-red/50 transition-colors duration-300" />
+                {/* Icon */}
+                <div className="w-14 h-14 text-[#00AEEF] mb-6 group-hover:scale-110 transition-transform duration-300">
+                  {service.icon}
+                </div>
+                <span className="font-body text-[#999] text-xs tracking-widest block mb-3">{service.number}</span>
+                <h3 className="font-display text-[#1A1A1A] text-xl lg:text-2xl tracking-wider group-hover:text-[#00AEEF] transition-colors duration-300 leading-tight mb-2">
                   {service.label.toUpperCase()}
+                </h3>
+                <p className="font-body text-[#666] text-sm tracking-wider mb-6">
+                  {service.tagline}
+                </p>
+                <span className="inline-flex items-center gap-2 font-body text-[#00AEEF] text-xs tracking-widest uppercase group-hover:gap-3 transition-all duration-300">
+                  Learn more
+                  <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
                 </span>
-                <span className="block mt-6 text-[#999] group-hover:text-[#00AEEF] transition-colors duration-300">→</span>
               </a>
             </AnimatedSection>
           ))}
@@ -905,7 +989,6 @@ export default function LandingPage() {
       {alternatingSections.map((section, i) => (
         <AlternatingSection key={section.id} {...section} inverted={i % 2 === 1} />
       ))}
-
       <SocialProof />
       <HowItWorks />
       <About />
