@@ -361,12 +361,9 @@ function ServicesGrid() {
                   {service.icon}
                 </div>
                 <span className="font-body text-[#999] text-xs tracking-widest block mb-3">{service.number}</span>
-                <h3 className="font-display text-[#1A1A1A] text-xl lg:text-2xl tracking-wider group-hover:text-[#00AEEF] transition-colors duration-300 leading-tight mb-2">
+                <h3 className="font-display text-[#1A1A1A] text-xl lg:text-2xl tracking-wider group-hover:text-[#00AEEF] transition-colors duration-300 leading-tight mb-6">
                   {service.label.toUpperCase()}
                 </h3>
-                <p className="font-body text-[#666] text-sm tracking-wider mb-6">
-                  {service.tagline}
-                </p>
                 <span className="inline-flex items-center gap-2 font-body text-[#00AEEF] text-xs tracking-widest uppercase group-hover:gap-3 transition-all duration-300">
                   Learn more
                   <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
