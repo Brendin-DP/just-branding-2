@@ -87,7 +87,7 @@ function PlaceholderImage({ className = "", label = "Image" }) {
 const BRAND_RED = "230, 57, 70"; // #E63946
 const BRAND_CYAN = "0, 174, 239"; // #00AEEF
 
-function GridCanvas({ width, height, mouseX, mouseY }) {
+function GridCanvas({ width, height, mouseX, mouseY, variant = "light" }) {
   const canvasRef = useRef(null);
   const frameRef = useRef(null);
   const startTime = useRef(Date.now());
@@ -140,7 +140,7 @@ function GridCanvas({ width, height, mouseX, mouseY }) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, h * drawProgress);
-        ctx.strokeStyle = `rgba(26,26,26,${alpha})`;
+        ctx.strokeStyle = variant === "dark" ? `rgba(255,255,255,${alpha * 0.9})` : `rgba(26,26,26,${alpha})`;
         ctx.lineWidth = c % 7 === 0 ? 0.8 : 0.4;
         ctx.stroke();
       }
@@ -153,7 +153,7 @@ function GridCanvas({ width, height, mouseX, mouseY }) {
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(w * drawProgress, y);
-        ctx.strokeStyle = `rgba(26,26,26,${alpha})`;
+        ctx.strokeStyle = variant === "dark" ? `rgba(255,255,255,${alpha * 0.9})` : `rgba(26,26,26,${alpha})`;
         ctx.lineWidth = r % 4 === 0 ? 0.8 : 0.4;
         ctx.stroke();
       }
@@ -177,7 +177,7 @@ function GridCanvas({ width, height, mouseX, mouseY }) {
         } else if (isCyan) {
           r = 0; g = 174; b = 239;
         } else {
-          r = 80; g = 80; b = 90;
+          r = variant === "dark" ? 200 : 80; g = variant === "dark" ? 200 : 80; b = variant === "dark" ? 210 : 90;
         }
         const alpha = (0.15 + pulse * 0.25 + mouseGlow * 0.6) * drawProgress;
         const size = node.size * (1 + mouseGlow * 2.5 + pulse * 0.3);
@@ -215,7 +215,7 @@ function GridCanvas({ width, height, mouseX, mouseY }) {
 
     frameRef.current = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frameRef.current);
-  }, [mouseX, mouseY, width, height]);
+  }, [mouseX, mouseY, width, height, variant]);
 
   return (
     <canvas
@@ -369,6 +369,149 @@ function HeroBackground({ children }) {
   );
 }
 
+function HeroBackgroundDark({ children }) {
+  const containerRef = useRef(null);
+  const [dims, setDims] = useState({ w: 1440, h: 900 });
+  const rawX = useMotionValue(typeof window !== "undefined" ? window.innerWidth / 2 : 720);
+  const rawY = useMotionValue(typeof window !== "undefined" ? window.innerHeight / 2 : 450);
+  const mouseX = useSpring(rawX, { stiffness: 60, damping: 20 });
+  const mouseY = useSpring(rawY, { stiffness: 60, damping: 20 });
+  const [mxVal, setMxVal] = useState(720);
+  const [myVal, setMyVal] = useState(450);
+
+  useEffect(() => {
+    const update = () => {
+      if (containerRef.current) {
+        setDims({ w: containerRef.current.offsetWidth, h: containerRef.current.offsetHeight });
+      }
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  useEffect(() => {
+    const move = (e) => {
+      rawX.set(e.clientX);
+      rawY.set(e.clientY);
+    };
+    window.addEventListener("mousemove", move);
+    return () => window.removeEventListener("mousemove", move);
+  }, [rawX, rawY]);
+
+  useEffect(() => {
+    const unsubX = mouseX.on("change", (v) => setMxVal(v));
+    const unsubY = mouseY.on("change", (v) => setMyVal(v));
+    return () => { unsubX(); unsubY(); };
+  }, [mouseX, mouseY]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="absolute inset-0 overflow-hidden"
+      style={{ background: "#0d0d0d" }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `
+            linear-gradient(to bottom, rgba(255,255,255,0.03) 0%, transparent 15%),
+            radial-gradient(ellipse 80% 60% at 50% 100%, rgba(20,20,20,0) 0%, #0d0d0d 70%),
+            radial-gradient(ellipse 120% 80% at 50% 50%, #111 40%, #0d0d0d 100%)
+          `,
+          zIndex: 1,
+        }}
+      />
+      <div className="absolute inset-0" style={{ zIndex: 2 }}>
+        <GridCanvas width={dims.w} height={dims.h} mouseX={mxVal} mouseY={myVal} variant="dark" />
+      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, delay: 1 }}
+        className="absolute pointer-events-none"
+        style={{
+          bottom: -120,
+          left: -120,
+          width: 480,
+          height: 480,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, rgba(${BRAND_RED},0.12) 0%, transparent 70%)`,
+          zIndex: 3,
+        }}
+      />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, delay: 1.3 }}
+        className="absolute pointer-events-none"
+        style={{
+          top: -80,
+          right: -80,
+          width: 400,
+          height: 400,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, rgba(${BRAND_CYAN},0.08) 0%, transparent 70%)`,
+          zIndex: 3,
+        }}
+      />
+      <motion.div
+        className="absolute pointer-events-none"
+        style={{
+          left: mouseX,
+          top: mouseY,
+          x: "-50%",
+          y: "-50%",
+          width: 600,
+          height: 600,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, rgba(${BRAND_RED},0.06) 0%, transparent 65%)`,
+          zIndex: 4,
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 5,
+          backgroundImage: `repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 3px,
+            rgba(255,255,255,0.015) 3px,
+            rgba(255,255,255,0.015) 4px
+          )`,
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 6,
+          background: `radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.3) 100%)`,
+        }}
+      />
+      <div
+        className="absolute left-0 right-0 bottom-0 pointer-events-none"
+        style={{
+          height: "35%",
+          zIndex: 7,
+          background: "linear-gradient(to top, #0d0d0d 0%, transparent 100%)",
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.045]"
+        style={{
+          zIndex: 8,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundSize: "120px",
+        }}
+      />
+      <div className="relative w-full h-full" style={{ zIndex: 10 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 // ============================================================
 // NAV
 // ============================================================
@@ -404,6 +547,12 @@ function Nav() {
               {item}
             </a>
           ))}
+          <a
+            href="#home-v2"
+            className="text-[#1A1A1A] font-body text-sm tracking-wider hover:text-[#00AEEF] transition-colors duration-300"
+          >
+            Home V2
+          </a>
           <a
             href="#contact"
             className="border border-[#1A1A1A] text-[#1A1A1A] font-body text-sm tracking-wider px-5 py-2 hover:bg-[#00AEEF] hover:text-white hover:border-[#00AEEF] transition-all duration-300"
@@ -444,6 +593,13 @@ function Nav() {
                 {item}
               </a>
             ))}
+            <a
+              href="#home-v2"
+              className="text-[#1A1A1A] font-body text-lg tracking-wider hover:text-[#00AEEF]"
+              onClick={() => setMenuOpen(false)}
+            >
+              Home V2
+            </a>
             <a
               href="#contact"
               className="border border-[#00AEEF] text-[#00AEEF] font-body text-sm tracking-widest px-5 py-3 text-center"
@@ -537,6 +693,90 @@ function Hero() {
             />
           </motion.div>
         </HeroBackground>
+      </div>
+    </section>
+  );
+}
+
+// ============================================================
+// HERO DARK (Home V2)
+// ============================================================
+function HeroDark() {
+  return (
+    <section id="home-v2" className="relative min-h-screen flex items-center overflow-hidden">
+      <div className="absolute inset-0">
+        <HeroBackgroundDark>
+          <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 py-24 text-center">
+            {/* Accent line */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1.2, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              className="absolute top-0 left-0 right-0 h-px bg-[#00AEEF] origin-left"
+            />
+
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={stagger}
+              className="max-w-4xl w-full flex flex-col items-center relative"
+            >
+              <motion.p
+                variants={fadeUp}
+                className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-6"
+              >
+                Signage & Branding Cape Town
+              </motion.p>
+
+              <motion.h1
+                variants={fadeUp}
+                className="font-display text-[clamp(4rem,12vw,10rem)] leading-none text-white mb-8 tracking-wider"
+              >
+                YOUR BRAND<br />
+                <span className="text-[#00AEEF]">DESERVES</span><br />
+                TO BE SEEN.
+              </motion.h1>
+
+              <motion.p
+                variants={fadeUp}
+                className="font-body text-white/70 text-lg md:text-xl max-w-xl leading-relaxed mb-12 mx-auto"
+              >
+                From exhibition stands to vehicle wraps we build the kind of presence that stops people in their tracks.
+              </motion.p>
+
+              <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-center w-full">
+                <a
+                  href="#contact"
+                  className="group inline-flex items-center gap-3 bg-[#00AEEF] text-white font-body font-medium text-sm tracking-widest uppercase px-8 py-4 hover:bg-[#0099D4] transition-colors duration-300"
+                >
+                  Let's build something
+                  <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
+                </a>
+                <a
+                  href="#services"
+                  className="inline-flex items-center gap-3 border border-white/60 text-white font-body text-sm tracking-widest uppercase px-8 py-4 hover:border-[#00AEEF] hover:text-[#00AEEF] transition-colors duration-300"
+                >
+                  See our work
+                </a>
+              </motion.div>
+            </motion.div>
+          </div>
+
+          {/* Scroll indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2 }}
+            className="absolute bottom-8 right-8 flex flex-col items-center gap-2"
+          >
+            <span className="font-body text-white/60 text-xs tracking-widest uppercase rotate-90 origin-center">Scroll</span>
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-px h-12 bg-gradient-to-b from-[#00AEEF] to-transparent"
+            />
+          </motion.div>
+        </HeroBackgroundDark>
       </div>
     </section>
   );
@@ -1187,6 +1427,20 @@ function Footer() {
 // MAIN LANDING PAGE COMPONENT
 // ============================================================
 export default function LandingPage() {
+  const [heroVariant, setHeroVariant] = useState(() =>
+    typeof window !== "undefined" && window.location.hash === "#home-v2" ? "dark" : "light"
+  );
+
+  useEffect(() => {
+    const onHashChange = () => {
+      const isDark = window.location.hash === "#home-v2";
+      setHeroVariant(isDark ? "dark" : "light");
+      if (isDark) window.scrollTo(0, 0);
+    };
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
   const alternatingSections = [
     {
       id: "exhibitions",
@@ -1264,7 +1518,7 @@ export default function LandingPage() {
       `}</style>
 
       <Nav />
-      <Hero />
+      {heroVariant === "dark" ? <HeroDark /> : <Hero />}
       <ServicesGrid />
 
       {alternatingSections.map((section, i) => (
