@@ -1479,14 +1479,14 @@ function Footer() {
 // ============================================================
 export default function LandingPage() {
   const [heroVariant, setHeroVariant] = useState(() =>
-    typeof window !== "undefined" && window.location.hash === "#home-v2" ? "dark" : "light"
+    typeof window !== "undefined" && window.location.hash === "#home-v2" ? "light" : "dark"
   );
 
   useEffect(() => {
     const onHashChange = () => {
-      const isDark = window.location.hash === "#home-v2";
-      setHeroVariant(isDark ? "dark" : "light");
-      if (isDark) window.scrollTo(0, 0);
+      const isV2 = window.location.hash === "#home-v2";
+      setHeroVariant(isV2 ? "light" : "dark");
+      if (isV2) window.scrollTo(0, 0);
     };
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
