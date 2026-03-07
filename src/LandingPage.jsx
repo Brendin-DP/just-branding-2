@@ -140,7 +140,7 @@ function GridCanvas({ width, height, mouseX, mouseY }) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, h * drawProgress);
-        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+        ctx.strokeStyle = `rgba(26,26,26,${alpha})`;
         ctx.lineWidth = c % 7 === 0 ? 0.8 : 0.4;
         ctx.stroke();
       }
@@ -153,7 +153,7 @@ function GridCanvas({ width, height, mouseX, mouseY }) {
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(w * drawProgress, y);
-        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+        ctx.strokeStyle = `rgba(26,26,26,${alpha})`;
         ctx.lineWidth = r % 4 === 0 ? 0.8 : 0.4;
         ctx.stroke();
       }
@@ -177,7 +177,7 @@ function GridCanvas({ width, height, mouseX, mouseY }) {
         } else if (isCyan) {
           r = 0; g = 174; b = 239;
         } else {
-          r = 255; g = 255; b = 255;
+          r = 80; g = 80; b = 90;
         }
         const alpha = (0.15 + pulse * 0.25 + mouseGlow * 0.6) * drawProgress;
         const size = node.size * (1 + mouseGlow * 2.5 + pulse * 0.3);
@@ -267,14 +267,14 @@ function HeroBackground({ children }) {
     <div
       ref={containerRef}
       className="absolute inset-0 overflow-hidden"
-      style={{ background: "#0a0a0a" }}
+      style={{ background: "#F8F8F8" }}
     >
       <div
         className="absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse 80% 60% at 50% 100%, rgba(15,15,15,0) 0%, #0a0a0a 70%),
-            radial-gradient(ellipse 120% 80% at 50% 50%, #111 40%, #0a0a0a 100%)
+            radial-gradient(ellipse 80% 60% at 50% 100%, rgba(248,248,248,0) 0%, #F8F8F8 70%),
+            radial-gradient(ellipse 120% 80% at 50% 50%, #F5F5F5 40%, #F8F8F8 100%)
           `,
           zIndex: 1,
         }}
@@ -334,8 +334,8 @@ function HeroBackground({ children }) {
             -45deg,
             transparent,
             transparent 3px,
-            rgba(255,255,255,0.008) 3px,
-            rgba(255,255,255,0.008) 4px
+            rgba(0,0,0,0.02) 3px,
+            rgba(0,0,0,0.02) 4px
           )`,
         }}
       />
@@ -343,7 +343,7 @@ function HeroBackground({ children }) {
         className="absolute inset-0 pointer-events-none"
         style={{
           zIndex: 6,
-          background: `radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(5,5,5,0.7) 100%)`,
+          background: `radial-gradient(ellipse 100% 100% at 50% 50%, transparent 50%, rgba(0,0,0,0.04) 100%)`,
         }}
       />
       <div
@@ -351,7 +351,7 @@ function HeroBackground({ children }) {
         style={{
           height: "35%",
           zIndex: 7,
-          background: "linear-gradient(to top, #0a0a0a 0%, transparent 100%)",
+          background: "linear-gradient(to top, #F8F8F8 0%, transparent 100%)",
         }}
       />
       <div
@@ -463,10 +463,10 @@ function Nav() {
 // ============================================================
 function Hero() {
   return (
-    <section className="relative min-h-screen flex items-end overflow-hidden">
+    <section className="relative min-h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <HeroBackground>
-          <div className="flex flex-col justify-end h-full max-w-7xl mx-auto px-6 pb-24 pt-40">
+          <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 py-24 text-center">
             {/* Accent line */}
             <motion.div
               initial={{ scaleX: 0 }}
@@ -479,7 +479,7 @@ function Hero() {
               initial="hidden"
               animate="visible"
               variants={stagger}
-              className="max-w-4xl relative"
+              className="max-w-4xl w-full flex flex-col items-center relative"
             >
               <motion.p
                 variants={fadeUp}
@@ -490,7 +490,7 @@ function Hero() {
 
               <motion.h1
                 variants={fadeUp}
-                className="font-display text-[clamp(4rem,12vw,10rem)] leading-none text-white mb-8 tracking-wider"
+                className="font-display text-[clamp(4rem,12vw,10rem)] leading-none text-[#1A1A1A] mb-8 tracking-wider"
               >
                 YOUR BRAND<br />
                 <span className="text-[#00AEEF]">DESERVES</span><br />
@@ -499,12 +499,12 @@ function Hero() {
 
               <motion.p
                 variants={fadeUp}
-                className="font-body text-white/70 text-lg md:text-xl max-w-xl leading-relaxed mb-12"
+                className="font-body text-[#666] text-lg md:text-xl max-w-xl leading-relaxed mb-12 mx-auto"
               >
                 From exhibition stands to vehicle wraps we build the kind of presence that stops people in their tracks.
               </motion.p>
 
-              <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
+              <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-center w-full">
                 <a
                   href="#contact"
                   className="group inline-flex items-center gap-3 bg-[#00AEEF] text-white font-body font-medium text-sm tracking-widest uppercase px-8 py-4 hover:bg-[#0099D4] transition-colors duration-300"
@@ -514,7 +514,7 @@ function Hero() {
                 </a>
                 <a
                   href="#services"
-                  className="inline-flex items-center gap-3 border border-white/60 text-white font-body text-sm tracking-widest uppercase px-8 py-4 hover:border-[#00AEEF] hover:text-[#00AEEF] transition-colors duration-300"
+                  className="inline-flex items-center gap-3 border border-[#1A1A1A] text-[#1A1A1A] font-body text-sm tracking-widest uppercase px-8 py-4 hover:border-[#00AEEF] hover:text-[#00AEEF] transition-colors duration-300"
                 >
                   See our work
                 </a>
@@ -529,7 +529,7 @@ function Hero() {
             transition={{ delay: 2 }}
             className="absolute bottom-8 right-8 flex flex-col items-center gap-2"
           >
-            <span className="font-body text-white/60 text-xs tracking-widest uppercase rotate-90 origin-center">Scroll</span>
+            <span className="font-body text-[#666] text-xs tracking-widest uppercase rotate-90 origin-center">Scroll</span>
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}
