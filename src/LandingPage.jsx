@@ -296,7 +296,7 @@ function ServicesGrid() {
 // ============================================================
 // ALTERNATING SECTION COMPONENT
 // ============================================================
-function AlternatingSection({ id, number, eyebrow, headline, description, imageLabel, reverse = false, href, inverted = false }) {
+function AlternatingSection({ id, number, eyebrow, headline, description, imageLabel, imageSrc, reverse = false, href, inverted = false }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -312,10 +312,18 @@ function AlternatingSection({ id, number, eyebrow, headline, description, imageL
           className={`relative ${reverse ? "lg:order-2" : "lg:order-1"}`}
         >
           <div className="relative overflow-hidden aspect-[4/3] rounded-xl shadow-lg">
-            <PlaceholderImage
-              className="w-full h-full"
-              label={imageLabel}
-            />
+            {imageSrc ? (
+              <img
+                src={imageSrc}
+                alt={imageLabel}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <PlaceholderImage
+                className="w-full h-full"
+                label={imageLabel}
+              />
+            )}
             {/* Hover scale overlay */}
             <motion.div
               whileHover={{ scale: 1.03 }}
@@ -792,6 +800,7 @@ export default function LandingPage() {
       description:
         "You've got one shot on the floor. While everyone else blends into the background, your stand should be the one people stop, photograph, and remember. We build exhibition experiences that turn heads before you've said a single word.",
       imageLabel: "Exhibition stand — hero shot",
+      imageSrc: "/exhibition.png",
       reverse: false,
       href: "/exhibitions",
     },
@@ -803,6 +812,7 @@ export default function LandingPage() {
       description:
         "Your space is speaking to people whether you like it or not. Bad signage says 'we'll do.' Great signage says 'we mean business.' We turn your site into a brand statement — one that builds trust before anyone walks through the door.",
       imageLabel: "Site signage — shopfront or office",
+      imageSrc: "/signage.png",
       reverse: true,
       href: "/signage",
     },
@@ -814,6 +824,7 @@ export default function LandingPage() {
       description:
         "Your fleet is on the road every single day. That's thousands of impressions your competitors aren't getting. We wrap your vehicles in branding that's sharp, durable, and impossible to ignore.",
       imageLabel: "Vehicle wrap — bakkie or fleet",
+      imageSrc: "/vehicles.png",
       reverse: false,
       href: "/vehicles",
     },
@@ -825,6 +836,7 @@ export default function LandingPage() {
       description:
         "Great merch doesn't sit in a drawer. It walks into rooms, starts conversations, and keeps working long after the event is over. We produce apparel and merchandise worth putting your name on.",
       imageLabel: "Branded apparel — lifestyle shot",
+      imageSrc: "/apparel.png",
       reverse: true,
       href: "/merch",
     },
@@ -836,6 +848,7 @@ export default function LandingPage() {
       description:
         "Some ideas don't fit a template. That's exactly where we thrive. From custom-built stands to one-of-a-kind brand installations, we take the thing in your head and make it real — no compromises.",
       imageLabel: "Workshop fabrication shot",
+      imageSrc: "/fabrication.png",
       reverse: false,
       href: "/fabrication",
     },
