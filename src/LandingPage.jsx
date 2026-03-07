@@ -513,21 +513,47 @@ function HeroBackgroundDark({ children }) {
 }
 
 // ============================================================
-// NAV
+// NAV — Dark on load, transitions to white as you scroll
 // ============================================================
 function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const navBg = scrolled ? "rgba(255,255,255,0.96)" : "rgba(13,13,13,0.9)";
+  const navBorder = scrolled ? "1px solid #E5E5E5" : "1px solid transparent";
+  const linkColor = scrolled ? "#1A1A1A" : "#F5F5F5";
+  const logoFilter = scrolled ? "none" : "none";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-[#E5E5E5]">
+    <motion.nav
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed top-0 left-0 right-0 z-50"
+      style={{
+        background: navBg,
+        borderBottom: navBorder,
+        backdropFilter: scrolled ? "blur(16px)" : "blur(12px)",
+        WebkitBackdropFilter: scrolled ? "blur(16px)" : "blur(12px)",
+        transition: "background 0.5s ease, border-color 0.5s ease, backdrop-filter 0.5s ease",
+      }}
+    >
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
+        {/* Logo */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
           <a href="#" className="block">
-            <img src="/logo.png" alt="Just Branding" className="h-11 object-contain" />
+            <img
+              src="/logo.png"
+              alt="Just Branding"
+              className="h-11 object-contain transition-all duration-500"
+              style={{ filter: logoFilter }}
+            />
           </a>
         </motion.div>
 
@@ -542,20 +568,26 @@ function Nav() {
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
-              className="text-[#1A1A1A] font-body text-sm tracking-wider hover:text-[#00AEEF] transition-colors duration-300"
+              className="font-body text-sm tracking-wider transition-colors duration-300 hover:text-[#00AEEF]"
+              style={{ color: linkColor }}
             >
               {item}
             </a>
           ))}
           <a
             href="#home-v2"
-            className="text-[#1A1A1A] font-body text-sm tracking-wider hover:text-[#00AEEF] transition-colors duration-300"
+            className="font-body text-sm tracking-wider transition-colors duration-300 hover:text-[#00AEEF]"
+            style={{ color: linkColor }}
           >
             Home V2
           </a>
           <a
             href="#contact"
-            className="border border-[#1A1A1A] text-[#1A1A1A] font-body text-sm tracking-wider px-5 py-2 hover:bg-[#00AEEF] hover:text-white hover:border-[#00AEEF] transition-all duration-300"
+            className="font-body text-sm tracking-wider px-5 py-2 transition-all duration-300 hover:bg-[#00AEEF] hover:text-white hover:border-[#00AEEF]"
+            style={{
+              border: `1px solid ${linkColor}`,
+              color: linkColor,
+            }}
           >
             Let's Talk
           </a>
@@ -563,13 +595,32 @@ function Nav() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden text-[#1A1A1A]"
+          className="md:hidden"
           onClick={() => setMenuOpen(!menuOpen)}
+          style={{ color: linkColor }}
         >
           <div className="space-y-1.5">
-            <span className={`block w-6 h-0.5 bg-[#1A1A1A] transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
-            <span className={`block w-6 h-0.5 bg-[#1A1A1A] transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
-            <span className={`block w-6 h-0.5 bg-[#1A1A1A] transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+            <span
+              className="block w-6 h-0.5 transition-all duration-300"
+              style={{
+                background: linkColor,
+                transform: menuOpen ? "rotate(45deg) translate(4px, 4px)" : "none",
+              }}
+            />
+            <span
+              className="block w-6 h-0.5 transition-all duration-300"
+              style={{
+                background: linkColor,
+                opacity: menuOpen ? 0 : 1,
+              }}
+            />
+            <span
+              className="block w-6 h-0.5 transition-all duration-300"
+              style={{
+                background: linkColor,
+                transform: menuOpen ? "rotate(-45deg) translate(4px, -4px)" : "none",
+              }}
+            />
           </div>
         </button>
       </div>
@@ -610,7 +661,7 @@ function Nav() {
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </motion.nav>
   );
 }
 
@@ -622,7 +673,7 @@ function Hero() {
     <section className="relative min-h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <HeroBackground>
-          <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 py-24 text-center">
+          <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 py-16 text-center">
             {/* Accent line */}
             <motion.div
               initial={{ scaleX: 0 }}
@@ -639,14 +690,14 @@ function Hero() {
             >
               <motion.p
                 variants={fadeUp}
-                className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-6"
+                className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-4"
               >
                 Signage & Branding Cape Town
               </motion.p>
 
               <motion.h1
                 variants={fadeUp}
-                className="font-display text-[clamp(4rem,12vw,10rem)] leading-none text-[#1A1A1A] mb-8 tracking-wider"
+                className="font-display text-[clamp(4rem,12vw,10rem)] leading-none text-[#1A1A1A] mb-6 tracking-wider"
               >
                 YOUR BRAND<br />
                 <span className="text-[#00AEEF]">DESERVES</span><br />
@@ -655,7 +706,7 @@ function Hero() {
 
               <motion.p
                 variants={fadeUp}
-                className="font-body text-[#666] text-lg md:text-xl max-w-xl leading-relaxed mb-12 mx-auto"
+                className="font-body text-[#666] text-lg md:text-xl max-w-xl leading-relaxed mb-10 mx-auto"
               >
                 From exhibition stands to vehicle wraps we build the kind of presence that stops people in their tracks.
               </motion.p>
@@ -706,7 +757,7 @@ function HeroDark() {
     <section id="home-v2" className="relative min-h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <HeroBackgroundDark>
-          <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 py-24 text-center">
+          <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 py-16 text-center">
             {/* Accent line */}
             <motion.div
               initial={{ scaleX: 0 }}
@@ -723,14 +774,14 @@ function HeroDark() {
             >
               <motion.p
                 variants={fadeUp}
-                className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-6"
+                className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-4"
               >
                 Signage & Branding Cape Town
               </motion.p>
 
               <motion.h1
                 variants={fadeUp}
-                className="font-display text-[clamp(4rem,12vw,10rem)] leading-none text-white mb-8 tracking-wider"
+                className="font-display text-[clamp(4rem,12vw,10rem)] leading-none text-white mb-6 tracking-wider"
               >
                 YOUR BRAND<br />
                 <span className="text-[#00AEEF]">DESERVES</span><br />
@@ -739,7 +790,7 @@ function HeroDark() {
 
               <motion.p
                 variants={fadeUp}
-                className="font-body text-white/70 text-lg md:text-xl max-w-xl leading-relaxed mb-12 mx-auto"
+                className="font-body text-white/70 text-lg md:text-xl max-w-xl leading-relaxed mb-10 mx-auto"
               >
                 From exhibition stands to vehicle wraps we build the kind of presence that stops people in their tracks.
               </motion.p>
