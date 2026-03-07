@@ -1,11 +1,11 @@
 import { useState, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 
-// Formspree form ID — create a form at formspree.io, set brendp51@gmail.com as recipient for testing, then replace with your form ID
+// Formspree form ID create a form at formspree.io, set brendp51@gmail.com as recipient for testing, then replace with your form ID
 const FORMSPREE_FORM_ID = "replace-me";
 
 // ============================================================
-// DESIGN TOKENS — edit these to restyle the entire site
+// DESIGN TOKENS edit these to restyle the entire site
 // ============================================================
 // Fonts: add to your index.html or global CSS:
 // @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
@@ -42,7 +42,7 @@ const slideRight = {
 };
 
 // ============================================================
-// ANIMATED SECTION WRAPPER — reuse this everywhere
+// ANIMATED SECTION WRAPPER reuse this everywhere
 // ============================================================
 function AnimatedSection({ children, className = "", delay = 0 }) {
   const ref = useRef(null);
@@ -178,7 +178,7 @@ function Hero() {
     <section className="relative min-h-screen bg-white flex items-end overflow-hidden">
       {/* Background image placeholder */}
       <div className="absolute inset-0 overflow-hidden">
-        <PlaceholderImage className="w-full h-full rounded-none" label="Hero — Full bleed brand/fabrication shot" />
+        <PlaceholderImage className="w-full h-full rounded-none" label="Hero Full bleed brand/fabrication shot" />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent" />
       </div>
 
@@ -201,7 +201,7 @@ function Hero() {
             variants={fadeUp}
             className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-6"
           >
-            Signage & Branding — Cape Town
+            Signage & Branding Cape Town
           </motion.p>
 
           <motion.h1
@@ -217,7 +217,7 @@ function Hero() {
             variants={fadeUp}
             className="font-body text-[#666] text-lg md:text-xl max-w-xl leading-relaxed mb-12"
           >
-            From exhibition stands to vehicle wraps — we build the kind of presence that stops people in their tracks.
+            From exhibition stands to vehicle wraps we build the kind of presence that stops people in their tracks.
           </motion.p>
 
           <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
@@ -257,7 +257,7 @@ function Hero() {
 }
 
 // ============================================================
-// SERVICES GRID — visual cards with icons
+// SERVICES GRID visual cards with icons
 // ============================================================
 const services = [
   {
@@ -341,10 +341,7 @@ function ServicesGrid() {
     <section id="services" className="bg-[#F8F8F8] border-t border-[#E5E5E5] py-20 lg:py-28">
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection className="text-center mb-16">
-          <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase mb-4">What we do</p>
-          <h2 className="font-display text-[clamp(2.5rem,5vw,4rem)] text-[#1A1A1A] tracking-wider leading-none">
-            BUILT TO<br />SHOW UP.
-          </h2>
+          <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase">What we do</p>
         </AnimatedSection>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -354,7 +351,7 @@ function ServicesGrid() {
                 href={`#${service.id}`}
                 className="group block bg-white border border-[#E5E5E5] rounded-xl p-8 hover:border-[#00AEEF]/30 hover:shadow-lg hover:shadow-[#00AEEF]/5 transition-all duration-300 overflow-hidden relative"
               >
-                {/* Accent corner — red for visual interest */}
+                {/* Accent corner red for visual interest */}
                 <div className="absolute top-0 right-0 w-20 h-20 border-l-2 border-t-2 border-brand-red/30 rounded-tl-xl -translate-y-1 translate-x-1 group-hover:border-brand-red/50 transition-colors duration-300" />
                 {/* Icon */}
                 <div className="w-14 h-14 text-[#00AEEF] mb-6 group-hover:scale-110 transition-transform duration-300">
@@ -415,7 +412,7 @@ function AlternatingSection({ id, number, eyebrow, headline, description, imageL
               className="absolute inset-0"
             />
           </div>
-          {/* Accent corner — Just Branding red */}
+          {/* Accent corner Just Branding red */}
           <div className="absolute -bottom-3 -right-3 w-16 h-16 border-r-2 border-b-2 border-brand-red rounded-br-xl" />
         </motion.div>
 
@@ -489,16 +486,17 @@ function SocialProof() {
               <div>
                 <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase mb-4">Project spotlight</p>
                 <h3 className="font-display text-4xl md:text-5xl text-[#1A1A1A] tracking-wider leading-none mb-6">
-                  KILLARNEY<br />INTERNATIONAL<br />RACEWAY
+                  CAPE TOWN<br />INTERNATIONAL<br />AIRPORT SHOWCASE
                 </h3>
                 <p className="font-body text-[#666] leading-relaxed">
-                  When the energy of race day demands a brand presence to match, there's no room for ordinary. We delivered a full branding installation that held its own against the spectacle.
+                  High-traffic airport spaces demand bold, unmissable branding. We delivered a full-scale wall installation for VALR, "Crypto for Everyone", positioned where thousands of travellers pass daily. Clean, confident, and built to cut through the noise.
                 </p>
               </div>
               <div className="overflow-hidden rounded-xl shadow-lg">
-                <PlaceholderImage
-                  className="aspect-video w-full"
-                  label="Killarney Raceway project shot"
+                <img
+                  src="/valr-airport.png"
+                  alt="VALR cryptocurrency advertisements at Cape Town International Airport"
+                  className="aspect-video w-full object-cover"
                 />
               </div>
             </div>
@@ -522,7 +520,7 @@ function HowItWorks() {
     {
       number: "02",
       title: "We get to work",
-      description: "Design, fabricate, print — everything handled in-house, so nothing gets lost in translation.",
+      description: "Design, fabricate, print, everything handled in-house, so nothing gets lost in translation.",
     },
     {
       number: "03",
@@ -583,7 +581,7 @@ function About() {
               <span className="text-[#999]">CAPE TOWN PROUD.</span>
             </h2>
             <p className="font-body text-[#666] text-base leading-relaxed mb-8 max-w-lg">
-              Just Branding is Neal, Melissa, and a team that genuinely cares about the work. Based in Killarney Gardens, we've been quietly building some of Cape Town's most recognisable brand presences — exhibitions, sites, vehicles, and everything in between.
+              Just Branding is Neal, Melissa, and a team that genuinely cares about the work. Based in Killarney Gardens, we've been quietly building some of Cape Town's most recognisable brand presences: exhibitions, sites, vehicles, and everything in between.
             </p>
             <p className="font-body text-[#666] text-base leading-relaxed max-w-lg">
               No account managers. No middlemen. Just the people who actually make your stuff, from the first conversation to the final install.
@@ -594,7 +592,7 @@ function About() {
             <div className="relative">
               <div className="overflow-hidden rounded-xl shadow-lg aspect-[4/3] relative">
                 <iframe
-                  title="Just Branding — 79 Kyalami Drive, Killarney Gardens"
+                  title="Just Branding 79 Kyalami Drive, Killarney Gardens"
                   src="https://www.google.com/maps?q=79+Kyalami+Drive,+Killarney+Gardens,+7441,+South+Africa&t=&z=15&ie=UTF8&iwloc=&output=embed"
                   className="absolute inset-0 w-full h-full border-0"
                   allowFullScreen
@@ -602,7 +600,7 @@ function About() {
                   referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
-              {/* Accent corner — Just Branding red */}
+              {/* Accent corner Just Branding red */}
               <div className="absolute -top-4 -left-4 w-24 h-24 border-l-2 border-t-2 border-brand-red rounded-tl-xl" />
               <div className="absolute -bottom-4 -right-4 bg-brand-red text-white font-body text-xs tracking-widest uppercase px-4 py-2 rounded-bl-lg">
                 Killarney Gardens, Cape Town
@@ -653,7 +651,7 @@ function CTACloser() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
 
-          {/* Left — copy */}
+          {/* Left copy */}
           <AnimatedSection>
             <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase mb-6">Get in touch</p>
             <h2 className="font-display text-[clamp(3rem,6vw,5.5rem)] text-[#1A1A1A] tracking-wider leading-none mb-8">
@@ -695,7 +693,7 @@ function CTACloser() {
             </div>
           </AnimatedSection>
 
-          {/* Right — form */}
+          {/* Right form */}
           <AnimatedSection delay={0.2}>
             <AnimatePresence mode="wait">
               {!submitted ? (
@@ -806,13 +804,13 @@ function Footer() {
     <footer className="bg-[#00AEEF] border-t border-[#0099D4]">
       <div className="max-w-7xl mx-auto px-6 py-16 lg:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          {/* Left block — logo, tagline, socials, address */}
+          {/* Left block logo, tagline, socials, address */}
           <div className="lg:col-span-5 space-y-6">
             <a href="#" className="block">
               <img src="/logo.png" alt="Just Branding" className="h-16 lg:h-20 object-contain" />
             </a>
             <p className="font-body text-white/90 text-sm tracking-wider">
-              Signage & Branding — Cape Town
+              Signage & Branding Cape Town
             </p>
             <div className="flex gap-4">
               {socialLinks.map((social) => (
@@ -844,7 +842,7 @@ function Footer() {
             </a>
           </div>
 
-          {/* Right block — link columns */}
+          {/* Right block link columns */}
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-16">
             {/* Services column */}
             <div>
@@ -911,7 +909,7 @@ export default function LandingPage() {
       headline: "Launch your exhibition\nlike you own the room.",
       description:
         "You've got one shot on the floor. While everyone else blends into the background, your stand should be the one people stop, photograph, and remember. We build exhibition experiences that turn heads before you've said a single word.",
-      imageLabel: "Exhibition stand — hero shot",
+      imageLabel: "Exhibition stand hero shot",
       imageSrc: "/exhibition.png",
       reverse: false,
       href: "/exhibitions",
@@ -922,8 +920,8 @@ export default function LandingPage() {
       eyebrow: "Signage & Site Branding",
       headline: "Make every wall, window,\nand doorway work for you.",
       description:
-        "Your space is speaking to people whether you like it or not. Bad signage says 'we'll do.' Great signage says 'we mean business.' We turn your site into a brand statement — one that builds trust before anyone walks through the door.",
-      imageLabel: "Site signage — shopfront or office",
+        "Your space is speaking to people whether you like it or not. Bad signage says 'we'll do.' Great signage says 'we mean business.' We turn your site into a brand statement one that builds trust before anyone walks through the door.",
+      imageLabel: "Site signage shopfront or office",
       imageSrc: "/signage.png",
       reverse: true,
       href: "/signage",
@@ -935,7 +933,7 @@ export default function LandingPage() {
       headline: "Every drive is a billboard\nyou've already paid for.",
       description:
         "Your fleet is on the road every single day. That's thousands of impressions your competitors aren't getting. We wrap your vehicles in branding that's sharp, durable, and impossible to ignore.",
-      imageLabel: "Vehicle wrap — bakkie or fleet",
+      imageLabel: "Vehicle wrap bakkie or fleet",
       imageSrc: "/vehicles.png",
       reverse: false,
       href: "/vehicles",
@@ -947,7 +945,7 @@ export default function LandingPage() {
       headline: "Give your brand something\npeople actually want to wear.",
       description:
         "Great merch doesn't sit in a drawer. It walks into rooms, starts conversations, and keeps working long after the event is over. We produce apparel and merchandise worth putting your name on.",
-      imageLabel: "Branded apparel — lifestyle shot",
+      imageLabel: "Branded apparel lifestyle shot",
       imageSrc: "/apparel.png",
       reverse: true,
       href: "/merch",
@@ -958,7 +956,7 @@ export default function LandingPage() {
       eyebrow: "Custom Fabrication",
       headline: "If you can picture it,\nwe can build it.",
       description:
-        "Some ideas don't fit a template. That's exactly where we thrive. From custom-built stands to one-of-a-kind brand installations, we take the thing in your head and make it real — no compromises.",
+        "Some ideas don't fit a template. That's exactly where we thrive. From custom-built stands to one-of-a-kind brand installations, we take the thing in your head and make it real no compromises.",
       imageLabel: "Workshop fabrication shot",
       imageSrc: "/fabrication.png",
       reverse: false,
