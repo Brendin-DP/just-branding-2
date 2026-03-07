@@ -16,6 +16,7 @@ export default {
           charcoal: '#333333',
           mid: '#666666',
           accent: '#00AEEF',
+          red: '#E63946',
           muted: '#666666',
           light: '#F8F8F8',
         },

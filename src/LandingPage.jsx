@@ -63,7 +63,7 @@ function AnimatedSection({ children, className = "", delay = 0 }) {
 // ============================================================
 function PlaceholderImage({ className = "", label = "Image" }) {
   return (
-    <div className={`bg-[#E5E5E5] flex items-center justify-center overflow-hidden ${className}`}>
+    <div className={`bg-[#E5E5E5] flex items-center justify-center overflow-hidden rounded-xl ${className}`}>
       <div className="text-center">
         <div className="w-12 h-12 border border-[#999] rounded-full flex items-center justify-center mx-auto mb-3">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="1.5">
@@ -93,7 +93,7 @@ function Nav() {
           transition={{ delay: 0.2 }}
         >
           <a href="#" className="block">
-            <img src="/logo.png" alt="Just Branding" className="h-8 object-contain" />
+            <img src="/logo.png" alt="Just Branding" className="h-11 object-contain" />
           </a>
         </motion.div>
 
@@ -174,8 +174,8 @@ function Hero() {
   return (
     <section className="relative min-h-screen bg-white flex items-end overflow-hidden">
       {/* Background image placeholder */}
-      <div className="absolute inset-0">
-        <PlaceholderImage className="w-full h-full" label="Hero — Full bleed brand/fabrication shot" />
+      <div className="absolute inset-0 overflow-hidden">
+        <PlaceholderImage className="w-full h-full rounded-none" label="Hero — Full bleed brand/fabrication shot" />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent" />
       </div>
 
@@ -266,7 +266,7 @@ const services = [
 
 function ServicesGrid() {
   return (
-    <section id="services" className="bg-white border-t border-[#E5E5E5] py-20">
+    <section id="services" className="bg-[#F8F8F8] border-t border-[#E5E5E5] py-20">
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection>
           <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase mb-12">What we do</p>
@@ -296,12 +296,12 @@ function ServicesGrid() {
 // ============================================================
 // ALTERNATING SECTION COMPONENT
 // ============================================================
-function AlternatingSection({ id, number, eyebrow, headline, description, imageLabel, reverse = false, href }) {
+function AlternatingSection({ id, number, eyebrow, headline, description, imageLabel, reverse = false, href, inverted = false }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id={id} className="bg-white border-t border-[#E5E5E5]">
+    <section id={id} className={`${inverted ? "bg-[#F8F8F8]" : "bg-white"} border-t border-[#E5E5E5]`}>
       <div ref={ref} className={`max-w-7xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-0 ${reverse ? "lg:flex-row-reverse" : ""}`}>
 
         {/* Image */}
@@ -311,7 +311,7 @@ function AlternatingSection({ id, number, eyebrow, headline, description, imageL
           variants={reverse ? slideRight : slideLeft}
           className={`relative ${reverse ? "lg:order-2" : "lg:order-1"}`}
         >
-          <div className="relative overflow-hidden aspect-[4/3]">
+          <div className="relative overflow-hidden aspect-[4/3] rounded-xl shadow-lg">
             <PlaceholderImage
               className="w-full h-full"
               label={imageLabel}
@@ -323,8 +323,8 @@ function AlternatingSection({ id, number, eyebrow, headline, description, imageL
               className="absolute inset-0"
             />
           </div>
-          {/* Accent corner */}
-          <div className="absolute -bottom-3 -right-3 w-16 h-16 border-r-2 border-b-2 border-[#00AEEF] opacity-40" />
+          {/* Accent corner — Just Branding red */}
+          <div className="absolute -bottom-3 -right-3 w-16 h-16 border-r-2 border-b-2 border-brand-red rounded-br-xl" />
         </motion.div>
 
         {/* Copy */}
@@ -368,7 +368,7 @@ function SocialProof() {
   const logos = ["Client One", "Client Two", "Client Three", "Client Four", "Client Five"];
 
   return (
-    <section className="bg-[#F8F8F8] border-t border-[#E5E5E5] py-20">
+    <section className="bg-white border-t border-[#E5E5E5] py-20">
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection>
           <p className="font-body text-[#666] text-xs tracking-[0.3em] uppercase text-center mb-12">
@@ -389,9 +389,9 @@ function SocialProof() {
 
         {/* Feature callout */}
         <AnimatedSection>
-          <div className="border border-[#E5E5E5] bg-white p-12 md:p-16 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-24 h-px bg-[#00AEEF]" />
-            <div className="absolute top-0 left-0 w-px h-24 bg-[#00AEEF]" />
+          <div className="border border-[#E5E5E5] bg-white p-12 md:p-16 relative overflow-hidden rounded-2xl shadow-sm">
+            <div className="absolute top-0 left-0 w-24 h-px bg-brand-red rounded-tl-2xl" />
+            <div className="absolute top-0 left-0 w-px h-24 bg-brand-red rounded-tl-2xl" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
@@ -403,10 +403,12 @@ function SocialProof() {
                   When the energy of race day demands a brand presence to match, there's no room for ordinary. We delivered a full branding installation that held its own against the spectacle.
                 </p>
               </div>
-              <PlaceholderImage
-                className="aspect-video w-full"
-                label="Killarney Raceway project shot"
-              />
+              <div className="overflow-hidden rounded-xl shadow-lg">
+                <PlaceholderImage
+                  className="aspect-video w-full"
+                  label="Killarney Raceway project shot"
+                />
+              </div>
             </div>
           </div>
         </AnimatedSection>
@@ -438,7 +440,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section className="bg-white border-t border-[#E5E5E5] py-24">
+    <section id="process" className="bg-[#F8F8F8] border-t border-[#E5E5E5] py-24">
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection className="mb-16">
           <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase mb-4">The process</p>
@@ -478,7 +480,7 @@ function HowItWorks() {
 // ============================================================
 function About() {
   return (
-    <section className="bg-[#F8F8F8] border-t border-[#E5E5E5] py-24">
+    <section id="about" className="bg-[#F8F8F8] border-t border-[#E5E5E5] py-24">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
@@ -498,13 +500,19 @@ function About() {
 
           <AnimatedSection delay={0.2}>
             <div className="relative">
-              <PlaceholderImage
-                className="w-full aspect-[4/3]"
-                label="Neal & Melissa / workshop shot"
-              />
-              {/* Accent */}
-              <div className="absolute -top-4 -left-4 w-24 h-24 border-l-2 border-t-2 border-[#00AEEF] opacity-40" />
-              <div className="absolute -bottom-4 -right-4 bg-[#00AEEF] text-white font-body text-xs tracking-widest uppercase px-4 py-2">
+              <div className="overflow-hidden rounded-xl shadow-lg aspect-[4/3] relative">
+                <iframe
+                  title="Just Branding — 79 Kyalami Drive, Killarney Gardens"
+                  src="https://www.google.com/maps?q=79+Kyalami+Drive,+Killarney+Gardens,+7441,+South+Africa&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                  className="absolute inset-0 w-full h-full border-0"
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+              {/* Accent corner — Just Branding red */}
+              <div className="absolute -top-4 -left-4 w-24 h-24 border-l-2 border-t-2 border-brand-red rounded-tl-xl" />
+              <div className="absolute -bottom-4 -right-4 bg-brand-red text-white font-body text-xs tracking-widest uppercase px-4 py-2 rounded-bl-lg">
                 Killarney Gardens, Cape Town
               </div>
             </div>
@@ -549,14 +557,31 @@ function CTACloser() {
 
             <div className="space-y-4">
               <a href="tel:0215562501" className="flex items-center gap-4 text-[#666] hover:text-[#1A1A1A] transition-colors duration-300 font-body text-sm tracking-wider">
-                <span className="text-[#00AEEF]">→</span> 021 556 2501
+                <span className="text-[#00AEEF] shrink-0" aria-hidden>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                </span>
+                021 556 2501
               </a>
               <a href="mailto:neal@justbranding.co.za" className="flex items-center gap-4 text-[#666] hover:text-[#1A1A1A] transition-colors duration-300 font-body text-sm tracking-wider">
-                <span className="text-[#00AEEF]">→</span> neal@justbranding.co.za
+                <span className="text-[#00AEEF] shrink-0" aria-hidden>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                    <polyline points="22,6 12,13 2,6" />
+                  </svg>
+                </span>
+                neal@justbranding.co.za
               </a>
-              <p className="flex items-center gap-4 text-[#666] font-body text-sm tracking-wider">
-                <span className="text-[#00AEEF]">→</span> 79 Kyalami Drive, Killarney Gardens, 7441
-              </p>
+              <a href="https://www.google.com/maps/search/79+Kyalami+Drive,+Killarney+Gardens,+7441" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-[#666] hover:text-[#1A1A1A] transition-colors duration-300 font-body text-sm tracking-wider">
+                <span className="text-[#00AEEF] shrink-0" aria-hidden>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                </span>
+                79 Kyalami Drive, Killarney Gardens, 7441
+              </a>
             </div>
           </AnimatedSection>
 
@@ -638,25 +663,116 @@ function CTACloser() {
 // FOOTER
 // ============================================================
 function Footer() {
+  const socialLinks = [
+    {
+      name: "Facebook",
+      href: "#",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+        </svg>
+      ),
+    },
+    {
+      name: "Instagram",
+      href: "#",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+        </svg>
+      ),
+    },
+  ];
+
   return (
-    <footer className="bg-[#F5F5F5] border-t border-[#E5E5E5] py-10">
-      <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <a href="#" className="block">
-          <img src="/logo.png" alt="Just Branding" className="h-6 object-contain opacity-70" />
-        </a>
-        <p className="font-body text-[#666] text-xs tracking-wider">
-          © {new Date().getFullYear()} Just Branding. Killarney Gardens, Cape Town.
-        </p>
-        <div className="flex gap-6">
-          {["Facebook", "Instagram"].map((social) => (
-            <a
-              key={social}
-              href="#"
-              className="font-body text-[#666] text-xs tracking-widest uppercase hover:text-[#00AEEF] transition-colors duration-300"
-            >
-              {social}
+    <footer className="bg-[#00AEEF] border-t border-[#0099D4]">
+      <div className="max-w-7xl mx-auto px-6 py-16 lg:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          {/* Left block — logo, tagline, socials, address */}
+          <div className="lg:col-span-5 space-y-6">
+            <a href="#" className="block">
+              <img src="/logo.png" alt="Just Branding" className="h-16 lg:h-20 object-contain" />
             </a>
-          ))}
+            <p className="font-body text-white/90 text-sm tracking-wider">
+              Signage & Branding — Cape Town
+            </p>
+            <div className="flex gap-4">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  className="text-white/90 hover:text-white transition-colors duration-300"
+                  aria-label={social.name}
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
+            <a
+              href="https://www.google.com/maps/search/79+Kyalami+Drive,+Killarney+Gardens,+7441"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-start gap-3 text-white/90 hover:text-white transition-colors duration-300 font-body text-sm tracking-wider max-w-xs"
+            >
+              <span className="text-white shrink-0 mt-0.5" aria-hidden>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </span>
+              79 Kyalami Drive, Killarney Gardens, 7441
+            </a>
+          </div>
+
+          {/* Right block — link columns */}
+          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-16">
+            {/* Services column */}
+            <div>
+              <h3 className="font-body text-xs tracking-[0.2em] uppercase text-white/70 mb-6">Services</h3>
+              <ul className="space-y-3">
+                {services.map((service) => (
+                  <li key={service.id}>
+                    <a
+                      href={`#${service.id}`}
+                      className="font-body text-sm text-white/90 hover:text-white transition-colors duration-300"
+                    >
+                      {service.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Company column */}
+            <div>
+              <h3 className="font-body text-xs tracking-[0.2em] uppercase text-white/70 mb-6">Company</h3>
+              <ul className="space-y-3">
+                <li>
+                  <a href="#about" className="font-body text-sm text-white/90 hover:text-white transition-colors duration-300">
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a href="#process" className="font-body text-sm text-white/90 hover:text-white transition-colors duration-300">
+                    The Process
+                  </a>
+                </li>
+                <li>
+                  <a href="#contact" className="font-body text-sm text-white/90 hover:text-white transition-colors duration-300">
+                    Contact
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="border-t border-white/20 py-6">
+        <div className="max-w-7xl mx-auto px-6">
+          <p className="font-body text-white/80 text-xs tracking-wider">
+            © {new Date().getFullYear()} Just Branding. Killarney Gardens, Cape Town.
+          </p>
         </div>
       </div>
     </footer>
@@ -742,8 +858,8 @@ export default function LandingPage() {
       <Hero />
       <ServicesGrid />
 
-      {alternatingSections.map((section) => (
-        <AlternatingSection key={section.id} {...section} />
+      {alternatingSections.map((section, i) => (
+        <AlternatingSection key={section.id} {...section} inverted={i % 2 === 1} />
       ))}
 
       <SocialProof />
