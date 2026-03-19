@@ -66,16 +66,16 @@ function AnimatedSection({ children, className = "", delay = 0 }) {
 // ============================================================
 function PlaceholderImage({ className = "", label = "Image" }) {
   return (
-    <div className={`bg-[#E5E5E5] flex items-center justify-center overflow-hidden rounded-xl ${className}`}>
+    <div className={`bg-[#E5E5E5] dark:bg-[#222222] flex items-center justify-center overflow-hidden rounded-xl transition-colors duration-300 ${className}`}>
       <div className="text-center">
-        <div className="w-12 h-12 border border-[#999] rounded-full flex items-center justify-center mx-auto mb-3">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="1.5">
+        <div className="w-12 h-12 border border-[#999] dark:border-[#555555] rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[#888] dark:text-[#888888]">
             <rect x="3" y="3" width="18" height="18" rx="2" />
             <circle cx="8.5" cy="8.5" r="1.5" />
             <path d="M21 15l-5-5L5 21" />
           </svg>
         </div>
-        <p className="text-[#666] text-xs font-body tracking-widest uppercase">{label}</p>
+        <p className="text-[#666] dark:text-[#888888] text-xs font-body tracking-widest uppercase">{label}</p>
       </div>
     </div>
   );
@@ -227,7 +227,8 @@ function GridCanvas({ width, height, mouseX, mouseY, variant = "light" }) {
   );
 }
 
-function HeroBackground({ children }) {
+function HeroBackground({ children, variant = "light" }) {
+  const isDark = variant === "dark";
   const containerRef = useRef(null);
   const [dims, setDims] = useState({ w: 1440, h: 900 });
   const rawX = useMotionValue(typeof window !== "undefined" ? window.innerWidth / 2 : 720);
@@ -263,24 +264,34 @@ function HeroBackground({ children }) {
     return () => { unsubX(); unsubY(); };
   }, [mouseX, mouseY]);
 
+  const baseBg = isDark ? "#0d0d0d" : "#F8F8F8";
+  const baseGradient = isDark
+    ? `linear-gradient(to bottom, rgba(255,255,255,0.03) 0%, transparent 15%),
+       radial-gradient(ellipse 80% 60% at 50% 100%, rgba(20,20,20,0) 0%, #0d0d0d 70%),
+       radial-gradient(ellipse 120% 80% at 50% 50%, #111 40%, #0d0d0d 100%)`
+    : `radial-gradient(ellipse 80% 60% at 50% 100%, rgba(248,248,248,0) 0%, #F8F8F8 70%),
+       radial-gradient(ellipse 120% 80% at 50% 50%, #F5F5F5 40%, #F8F8F8 100%)`;
+  const redBleed = isDark ? 0.12 : 0.18;
+  const cyanBleed = isDark ? 0.08 : 0.1;
+  const scanLines = isDark ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.02)";
+  const vignette = isDark ? "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.3) 100%)" : "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 50%, rgba(0,0,0,0.04) 100%)";
+  const bottomFade = `linear-gradient(to top, ${baseBg} 0%, transparent 100%)`;
+
   return (
     <div
       ref={containerRef}
       className="absolute inset-0 overflow-hidden"
-      style={{ background: "#F8F8F8" }}
+      style={{ background: baseBg }}
     >
       <div
         className="absolute inset-0"
         style={{
-          background: `
-            radial-gradient(ellipse 80% 60% at 50% 100%, rgba(248,248,248,0) 0%, #F8F8F8 70%),
-            radial-gradient(ellipse 120% 80% at 50% 50%, #F5F5F5 40%, #F8F8F8 100%)
-          `,
+          background: baseGradient,
           zIndex: 1,
         }}
       />
       <div className="absolute inset-0" style={{ zIndex: 2 }}>
-        <GridCanvas width={dims.w} height={dims.h} mouseX={mxVal} mouseY={myVal} />
+        <GridCanvas width={dims.w} height={dims.h} mouseX={mxVal} mouseY={myVal} variant={variant} />
       </div>
       <motion.div
         initial={{ opacity: 0 }}
@@ -293,7 +304,7 @@ function HeroBackground({ children }) {
           width: 480,
           height: 480,
           borderRadius: "50%",
-          background: `radial-gradient(circle, rgba(${BRAND_RED},0.18) 0%, transparent 70%)`,
+          background: `radial-gradient(circle, rgba(${BRAND_RED},${redBleed}) 0%, transparent 70%)`,
           zIndex: 3,
         }}
       />
@@ -308,7 +319,7 @@ function HeroBackground({ children }) {
           width: 400,
           height: 400,
           borderRadius: "50%",
-          background: `radial-gradient(circle, rgba(${BRAND_CYAN},0.1) 0%, transparent 70%)`,
+          background: `radial-gradient(circle, rgba(${BRAND_CYAN},${cyanBleed}) 0%, transparent 70%)`,
           zIndex: 3,
         }}
       />
@@ -330,20 +341,14 @@ function HeroBackground({ children }) {
         className="absolute inset-0 pointer-events-none"
         style={{
           zIndex: 5,
-          backgroundImage: `repeating-linear-gradient(
-            -45deg,
-            transparent,
-            transparent 3px,
-            rgba(0,0,0,0.02) 3px,
-            rgba(0,0,0,0.02) 4px
-          )`,
+          backgroundImage: `repeating-linear-gradient(-45deg, transparent, transparent 3px, ${scanLines} 3px, ${scanLines} 4px)`,
         }}
       />
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           zIndex: 6,
-          background: `radial-gradient(ellipse 100% 100% at 50% 50%, transparent 50%, rgba(0,0,0,0.04) 100%)`,
+          background: vignette,
         }}
       />
       <div
@@ -351,7 +356,7 @@ function HeroBackground({ children }) {
         style={{
           height: "35%",
           zIndex: 7,
-          background: "linear-gradient(to top, #F8F8F8 0%, transparent 100%)",
+          background: bottomFade,
         }}
       />
       <div
@@ -369,153 +374,23 @@ function HeroBackground({ children }) {
   );
 }
 
-function HeroBackgroundDark({ children }) {
-  const containerRef = useRef(null);
-  const [dims, setDims] = useState({ w: 1440, h: 900 });
-  const rawX = useMotionValue(typeof window !== "undefined" ? window.innerWidth / 2 : 720);
-  const rawY = useMotionValue(typeof window !== "undefined" ? window.innerHeight / 2 : 450);
-  const mouseX = useSpring(rawX, { stiffness: 60, damping: 20 });
-  const mouseY = useSpring(rawY, { stiffness: 60, damping: 20 });
-  const [mxVal, setMxVal] = useState(720);
-  const [myVal, setMyVal] = useState(450);
-
-  useEffect(() => {
-    const update = () => {
-      if (containerRef.current) {
-        setDims({ w: containerRef.current.offsetWidth, h: containerRef.current.offsetHeight });
-      }
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  useEffect(() => {
-    const move = (e) => {
-      rawX.set(e.clientX);
-      rawY.set(e.clientY);
-    };
-    window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
-  }, [rawX, rawY]);
-
-  useEffect(() => {
-    const unsubX = mouseX.on("change", (v) => setMxVal(v));
-    const unsubY = mouseY.on("change", (v) => setMyVal(v));
-    return () => { unsubX(); unsubY(); };
-  }, [mouseX, mouseY]);
-
-  return (
-    <div
-      ref={containerRef}
-      className="absolute inset-0 overflow-hidden"
-      style={{ background: "#0d0d0d" }}
-    >
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            linear-gradient(to bottom, rgba(255,255,255,0.03) 0%, transparent 15%),
-            radial-gradient(ellipse 80% 60% at 50% 100%, rgba(20,20,20,0) 0%, #0d0d0d 70%),
-            radial-gradient(ellipse 120% 80% at 50% 50%, #111 40%, #0d0d0d 100%)
-          `,
-          zIndex: 1,
-        }}
-      />
-      <div className="absolute inset-0" style={{ zIndex: 2 }}>
-        <GridCanvas width={dims.w} height={dims.h} mouseX={mxVal} mouseY={myVal} variant="dark" />
-      </div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2, delay: 1 }}
-        className="absolute pointer-events-none"
-        style={{
-          bottom: -120,
-          left: -120,
-          width: 480,
-          height: 480,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, rgba(${BRAND_RED},0.12) 0%, transparent 70%)`,
-          zIndex: 3,
-        }}
-      />
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2, delay: 1.3 }}
-        className="absolute pointer-events-none"
-        style={{
-          top: -80,
-          right: -80,
-          width: 400,
-          height: 400,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, rgba(${BRAND_CYAN},0.08) 0%, transparent 70%)`,
-          zIndex: 3,
-        }}
-      />
-      <motion.div
-        className="absolute pointer-events-none"
-        style={{
-          left: mouseX,
-          top: mouseY,
-          x: "-50%",
-          y: "-50%",
-          width: 600,
-          height: 600,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, rgba(${BRAND_RED},0.06) 0%, transparent 65%)`,
-          zIndex: 4,
-        }}
-      />
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          zIndex: 5,
-          backgroundImage: `repeating-linear-gradient(
-            -45deg,
-            transparent,
-            transparent 3px,
-            rgba(255,255,255,0.015) 3px,
-            rgba(255,255,255,0.015) 4px
-          )`,
-        }}
-      />
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          zIndex: 6,
-          background: `radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.3) 100%)`,
-        }}
-      />
-      <div
-        className="absolute left-0 right-0 bottom-0 pointer-events-none"
-        style={{
-          height: "35%",
-          zIndex: 7,
-          background: "linear-gradient(to top, #0d0d0d 0%, transparent 100%)",
-        }}
-      />
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.045]"
-        style={{
-          zIndex: 8,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundSize: "120px",
-        }}
-      />
-      <div className="relative w-full h-full" style={{ zIndex: 10 }}>
-        {children}
-      </div>
-    </div>
-  );
-}
+// Sun/Moon icons for theme toggle (24x24 inline SVG)
+const SunIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+  </svg>
+);
+const MoonIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+);
 
 // ============================================================
-// NAV — Dark on load, transitions to white as you scroll
+// NAV — Theme-aware, sun/moon toggle
 // ============================================================
-function Nav() {
+function Nav({ isDark, setIsDark }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -525,10 +400,15 @@ function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navBg = scrolled ? "rgba(255,255,255,0.96)" : "rgba(13,13,13,0.9)";
-  const navBorder = scrolled ? "1px solid #E5E5E5" : "1px solid transparent";
-  const linkColor = scrolled ? "#1A1A1A" : "#F5F5F5";
-  const logoFilter = scrolled ? "none" : "none";
+  const navBg = scrolled
+    ? (isDark ? "rgba(13,13,13,0.96)" : "rgba(255,255,255,0.96)")
+    : (isDark ? "rgba(13,13,13,0.9)" : "rgba(255,255,255,0.9)");
+  const navBorder = scrolled
+    ? (isDark ? "1px solid #1E1E1E" : "1px solid #E5E5E5")
+    : "1px solid transparent";
+  const linkColor = scrolled
+    ? (isDark ? "#F2F0EB" : "#1A1A1A")
+    : (isDark ? "#F2F0EB" : "#1A1A1A");
 
   return (
     <motion.nav
@@ -552,7 +432,6 @@ function Nav() {
               src="/logo.png"
               alt="Just Branding"
               className="h-11 object-contain transition-all duration-500"
-              style={{ filter: logoFilter }}
             />
           </a>
         </motion.div>
@@ -574,13 +453,37 @@ function Nav() {
               {item}
             </a>
           ))}
-          <a
-            href="#home-v2"
-            className="font-body text-sm tracking-wider transition-colors duration-300 hover:text-[#00AEEF]"
+          <button
+            type="button"
+            onClick={() => setIsDark(!isDark)}
+            className="p-2 transition-colors duration-300 hover:text-[#00AEEF]"
             style={{ color: linkColor }}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
-            Home V2
-          </a>
+            <AnimatePresence mode="wait">
+              {isDark ? (
+                <motion.span
+                  key="sun"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <SunIcon />
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="moon"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <MoonIcon />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
           <a
             href="#contact"
             className="font-body text-sm tracking-wider px-5 py-2 transition-all duration-300 hover:bg-[#00AEEF] hover:text-white hover:border-[#00AEEF]"
@@ -632,25 +535,26 @@ function Nav() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-t border-[#E5E5E5] px-6 py-6 flex flex-col gap-5"
+            className="md:hidden bg-white dark:bg-[#161616] border-t border-[#E5E5E5] dark:border-[#222222] px-6 py-6 flex flex-col gap-5"
           >
             {["Exhibitions", "Signage", "Vehicles", "Merch", "Fabrication"].map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase()}`}
-                className="text-[#1A1A1A] font-body text-lg tracking-wider hover:text-[#00AEEF]"
+                className="text-[#1A1A1A] dark:text-[#F2F0EB] font-body text-lg tracking-wider hover:text-[#00AEEF]"
                 onClick={() => setMenuOpen(false)}
               >
                 {item}
               </a>
             ))}
-            <a
-              href="#home-v2"
-              className="text-[#1A1A1A] font-body text-lg tracking-wider hover:text-[#00AEEF]"
-              onClick={() => setMenuOpen(false)}
+            <button
+              type="button"
+              onClick={() => { setIsDark(!isDark); setMenuOpen(false); }}
+              className="flex items-center gap-3 py-3 text-left text-[#1A1A1A] dark:text-[#F2F0EB] font-body text-lg tracking-wider hover:text-[#00AEEF] w-full"
             >
-              Home V2
-            </a>
+              {isDark ? <SunIcon /> : <MoonIcon />}
+              {isDark ? "Light mode" : "Dark mode"}
+            </button>
             <a
               href="#contact"
               className="border border-[#00AEEF] text-[#00AEEF] font-body text-sm tracking-widest px-5 py-3 text-center"
@@ -668,11 +572,11 @@ function Nav() {
 // ============================================================
 // HERO
 // ============================================================
-function Hero() {
+function Hero({ isDark }) {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0">
-        <HeroBackground>
+        <HeroBackground variant={isDark ? "dark" : "light"}>
           <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 pt-20 pb-12 text-center">
             {/* Accent line */}
             <motion.div
@@ -697,7 +601,7 @@ function Hero() {
 
               <motion.h1
                 variants={fadeUp}
-                className="font-display text-[clamp(3.5rem,11vw,9rem)] leading-none text-[#1A1A1A] mb-5 tracking-wider"
+                className="font-display text-[clamp(3.5rem,11vw,9rem)] leading-none text-[#1A1A1A] dark:text-white mb-5 tracking-wider"
               >
                 YOUR BRAND<br />
                 <span className="text-[#00AEEF]">DESERVES</span><br />
@@ -706,7 +610,7 @@ function Hero() {
 
               <motion.p
                 variants={fadeUp}
-                className="font-body text-[#666] text-lg md:text-xl max-w-xl leading-relaxed mb-8 mx-auto"
+                className="font-body text-[#666] dark:text-white/70 text-lg md:text-xl max-w-xl leading-relaxed mb-8 mx-auto"
               >
                 From exhibition stands to vehicle wraps we build the kind of presence that stops people in their tracks.
               </motion.p>
@@ -721,7 +625,7 @@ function Hero() {
                 </a>
                 <a
                   href="#services"
-                  className="inline-flex items-center gap-3 border border-[#1A1A1A] text-[#1A1A1A] font-body text-sm tracking-widest uppercase px-8 py-4 hover:border-[#00AEEF] hover:text-[#00AEEF] transition-colors duration-300"
+                  className="inline-flex items-center gap-3 border border-[#1A1A1A] dark:border-white/60 text-[#1A1A1A] dark:text-white font-body text-sm tracking-widest uppercase px-8 py-4 hover:border-[#00AEEF] hover:text-[#00AEEF] transition-colors duration-300"
                 >
                   See our work
                 </a>
@@ -736,7 +640,7 @@ function Hero() {
             transition={{ delay: 2 }}
             className="absolute bottom-8 right-8 flex flex-col items-center gap-2"
           >
-            <span className="font-body text-[#666] text-xs tracking-widest uppercase rotate-90 origin-center">Scroll</span>
+            <span className="font-body text-[#666] dark:text-white/60 text-xs tracking-widest uppercase rotate-90 origin-center">Scroll</span>
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}
@@ -744,90 +648,6 @@ function Hero() {
             />
           </motion.div>
         </HeroBackground>
-      </div>
-    </section>
-  );
-}
-
-// ============================================================
-// HERO DARK (Home V2)
-// ============================================================
-function HeroDark() {
-  return (
-    <section id="home-v2" className="relative min-h-screen flex items-center overflow-hidden">
-      <div className="absolute inset-0">
-        <HeroBackgroundDark>
-          <div className="flex flex-col justify-center items-center h-full max-w-7xl mx-auto px-6 pt-20 pb-12 text-center">
-            {/* Accent line */}
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 1.2, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-              className="absolute top-0 left-0 right-0 h-px bg-[#00AEEF] origin-left"
-            />
-
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={stagger}
-              className="max-w-4xl w-full flex flex-col items-center relative"
-            >
-              <motion.p
-                variants={fadeUp}
-                className="font-body text-[#00AEEF] text-sm tracking-[0.3em] uppercase mb-3"
-              >
-                Signage & Branding Cape Town
-              </motion.p>
-
-              <motion.h1
-                variants={fadeUp}
-                className="font-display text-[clamp(3.5rem,11vw,9rem)] leading-none text-white mb-5 tracking-wider"
-              >
-                YOUR BRAND<br />
-                <span className="text-[#00AEEF]">DESERVES</span><br />
-                TO BE SEEN.
-              </motion.h1>
-
-              <motion.p
-                variants={fadeUp}
-                className="font-body text-white/70 text-lg md:text-xl max-w-xl leading-relaxed mb-8 mx-auto"
-              >
-                From exhibition stands to vehicle wraps we build the kind of presence that stops people in their tracks.
-              </motion.p>
-
-              <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-center w-full">
-                <a
-                  href="#contact"
-                  className="group inline-flex items-center gap-3 bg-[#00AEEF] text-white font-body font-medium text-sm tracking-widest uppercase px-8 py-4 hover:bg-[#0099D4] transition-colors duration-300"
-                >
-                  Let's build something
-                  <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
-                </a>
-                <a
-                  href="#services"
-                  className="inline-flex items-center gap-3 border border-white/60 text-white font-body text-sm tracking-widest uppercase px-8 py-4 hover:border-[#00AEEF] hover:text-[#00AEEF] transition-colors duration-300"
-                >
-                  See our work
-                </a>
-              </motion.div>
-            </motion.div>
-          </div>
-
-          {/* Scroll indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2 }}
-            className="absolute bottom-8 right-8 flex flex-col items-center gap-2"
-          >
-            <span className="font-body text-white/60 text-xs tracking-widest uppercase rotate-90 origin-center">Scroll</span>
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="w-px h-12 bg-gradient-to-b from-[#00AEEF] to-transparent"
-            />
-          </motion.div>
-        </HeroBackgroundDark>
       </div>
     </section>
   );
@@ -915,7 +735,7 @@ const services = [
 
 function ServicesGrid() {
   return (
-    <section id="services" className="bg-[#F8F8F8] border-t border-[#E5E5E5] py-20 lg:py-28">
+    <section id="services" className="bg-[#F8F8F8] dark:bg-[#111111] border-t border-[#E5E5E5] dark:border-[#1E1E1E] py-20 lg:py-28 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection className="text-center mb-16">
           <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase">What we do</p>
@@ -926,7 +746,7 @@ function ServicesGrid() {
             <AnimatedSection key={service.id} delay={i * 0.08}>
               <a
                 href={`#${service.id}`}
-                className="group block bg-white border border-[#E5E5E5] rounded-xl p-8 hover:border-[#00AEEF]/30 hover:shadow-lg hover:shadow-[#00AEEF]/5 transition-all duration-300 overflow-hidden relative"
+                className="group block bg-white dark:bg-[#161616] border border-[#E5E5E5] dark:border-[#222222] rounded-xl p-8 hover:border-[#00AEEF]/30 hover:shadow-lg hover:shadow-[#00AEEF]/5 transition-all duration-300 overflow-hidden relative"
               >
                 {/* Accent corner red for visual interest */}
                 <div className="absolute top-0 right-0 w-20 h-20 border-l-2 border-t-2 border-brand-red/30 rounded-tl-xl -translate-y-1 translate-x-1 group-hover:border-brand-red/50 transition-colors duration-300" />
@@ -934,8 +754,8 @@ function ServicesGrid() {
                 <div className="w-14 h-14 text-[#00AEEF] mb-6 group-hover:scale-110 transition-transform duration-300">
                   {service.icon}
                 </div>
-                <span className="font-body text-[#999] text-xs tracking-widest block mb-3">{service.number}</span>
-                <h3 className="font-display text-[#1A1A1A] text-xl lg:text-2xl tracking-wider group-hover:text-[#00AEEF] transition-colors duration-300 leading-tight mb-6">
+                <span className="font-body text-[#999] dark:text-[#555555] text-xs tracking-widest block mb-3">{service.number}</span>
+                <h3 className="font-display text-[#1A1A1A] dark:text-[#F2F0EB] text-xl lg:text-2xl tracking-wider group-hover:text-[#00AEEF] transition-colors duration-300 leading-tight mb-6">
                   {service.label.toUpperCase()}
                 </h3>
                 <span className="inline-flex items-center gap-2 font-body text-[#00AEEF] text-xs tracking-widest uppercase group-hover:gap-3 transition-all duration-300">
@@ -959,7 +779,7 @@ function AlternatingSection({ id, number, eyebrow, headline, description, imageL
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id={id} className={`${inverted ? "bg-[#F8F8F8]" : "bg-white"} border-t border-[#E5E5E5]`}>
+    <section id={id} className={`${inverted ? "bg-[#F8F8F8] dark:bg-[#111111]" : "bg-white dark:bg-[#0D0D0D]"} border-t border-[#E5E5E5] dark:border-[#1E1E1E] transition-colors duration-300`}>
       <div ref={ref} className={`max-w-7xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-0 ${reverse ? "lg:flex-row-reverse" : ""}`}>
 
         {/* Image */}
@@ -1001,22 +821,22 @@ function AlternatingSection({ id, number, eyebrow, headline, description, imageL
           className={`flex flex-col justify-center ${reverse ? "lg:order-1 lg:pr-16" : "lg:order-2 lg:pl-16"} pt-12 lg:pt-0`}
         >
           <div className="flex items-center gap-4 mb-6">
-            <span className="font-body text-[#999] text-xs tracking-widest">{number}</span>
-            <div className="h-px flex-1 bg-[#E5E5E5]" />
+            <span className="font-body text-[#999] dark:text-[#555555] text-xs tracking-widest">{number}</span>
+            <div className="h-px flex-1 bg-[#E5E5E5] dark:bg-[#1E1E1E]" />
             <span className="font-body text-[#00AEEF] text-xs tracking-[0.2em] uppercase">{eyebrow}</span>
           </div>
 
-          <h2 className="font-display text-[clamp(2.5rem,5vw,4rem)] text-[#1A1A1A] leading-none tracking-wider mb-6">
+          <h2 className="font-display text-[clamp(2.5rem,5vw,4rem)] text-[#1A1A1A] dark:text-[#F2F0EB] leading-none tracking-wider mb-6">
             {headline.toUpperCase()}
           </h2>
 
-          <p className="font-body text-[#666] text-base leading-relaxed mb-10 max-w-md">
+          <p className="font-body text-[#666] dark:text-[#888888] text-base leading-relaxed mb-10 max-w-md">
             {description}
           </p>
 
           <a
             href={href}
-            className="group inline-flex items-center gap-3 text-[#1A1A1A] font-body text-sm tracking-widest uppercase border-b border-[#999] pb-2 w-fit hover:border-[#00AEEF] hover:text-[#00AEEF] transition-all duration-300"
+            className="group inline-flex items-center gap-3 text-[#1A1A1A] dark:text-[#F2F0EB] font-body text-sm tracking-widest uppercase border-b border-[#999] dark:border-[#555555] pb-2 w-fit hover:border-[#00AEEF] hover:text-[#00AEEF] transition-all duration-300"
           >
             Read more
             <span className="group-hover:translate-x-2 transition-transform duration-300">→</span>
@@ -1034,10 +854,10 @@ function SocialProof() {
   const logos = ["Client One", "Client Two", "Client Three", "Client Four", "Client Five"];
 
   return (
-    <section className="bg-white border-t border-[#E5E5E5] py-20">
+    <section className="bg-white dark:bg-[#0D0D0D] border-t border-[#E5E5E5] dark:border-[#1E1E1E] py-20 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection>
-          <p className="font-body text-[#666] text-xs tracking-[0.3em] uppercase text-center mb-12">
+          <p className="font-body text-[#666] dark:text-[#888888] text-xs tracking-[0.3em] uppercase text-center mb-12">
             Trusted by brands that take showing up seriously
           </p>
         </AnimatedSection>
@@ -1046,7 +866,7 @@ function SocialProof() {
         <AnimatedSection>
           <div className="flex flex-wrap items-center justify-center gap-12 mb-20">
             {logos.map((logo) => (
-              <div key={logo} className="font-display text-[#999] text-xl tracking-widest hover:text-[#666] transition-colors duration-300">
+              <div key={logo} className="font-display text-[#999] dark:text-[#555555] text-xl tracking-widest hover:text-[#666] dark:hover:text-[#888888] transition-colors duration-300">
                 {logo.toUpperCase()}
               </div>
             ))}
@@ -1055,17 +875,17 @@ function SocialProof() {
 
         {/* Feature callout */}
         <AnimatedSection>
-          <div className="border border-[#E5E5E5] bg-white p-12 md:p-16 relative overflow-hidden rounded-2xl shadow-sm">
+          <div className="border border-[#E5E5E5] dark:border-[#1E1E1E] bg-white dark:bg-[#161616] p-12 md:p-16 relative overflow-hidden rounded-2xl shadow-sm">
             <div className="absolute top-0 left-0 w-24 h-px bg-brand-red rounded-tl-2xl" />
             <div className="absolute top-0 left-0 w-px h-24 bg-brand-red rounded-tl-2xl" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
                 <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase mb-4">Project spotlight</p>
-                <h3 className="font-display text-4xl md:text-5xl text-[#1A1A1A] tracking-wider leading-none mb-6">
+                <h3 className="font-display text-4xl md:text-5xl text-[#1A1A1A] dark:text-[#F2F0EB] tracking-wider leading-none mb-6">
                   CAPE TOWN<br />INTERNATIONAL<br />AIRPORT SHOWCASE
                 </h3>
-                <p className="font-body text-[#666] leading-relaxed">
+                <p className="font-body text-[#666] dark:text-[#888888] leading-relaxed">
                   High-traffic airport spaces demand bold, unmissable branding. We delivered a full-scale wall installation for VALR, "Crypto for Everyone", positioned where thousands of travellers pass daily. Clean, confident, and built to cut through the noise.
                 </p>
               </div>
@@ -1107,22 +927,22 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="process" className="bg-[#F8F8F8] border-t border-[#E5E5E5] py-24">
+    <section id="process" className="bg-[#F8F8F8] dark:bg-[#111111] border-t border-[#E5E5E5] dark:border-[#1E1E1E] py-24 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection className="mb-16">
           <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase mb-4">The process</p>
-          <h2 className="font-display text-[clamp(3rem,6vw,5rem)] text-[#1A1A1A] tracking-wider leading-none">
+          <h2 className="font-display text-[clamp(3rem,6vw,5rem)] text-[#1A1A1A] dark:text-[#F2F0EB] tracking-wider leading-none">
             GETTING STARTED<br />IS THE EASY PART.
           </h2>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-l border-[#E5E5E5]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-l border-[#E5E5E5] dark:border-[#1E1E1E]">
           {steps.map((step, i) => (
             <AnimatedSection key={step.number} delay={i * 0.15}>
-              <div className="border-r border-b border-[#E5E5E5] p-10 h-full">
+              <div className="border-r border-b border-[#E5E5E5] dark:border-[#1E1E1E] p-10 h-full">
                 <span className="font-display text-[#00AEEF] text-6xl opacity-30 block mb-8">{step.number}</span>
-                <h3 className="font-display text-2xl text-[#1A1A1A] tracking-wider mb-4">{step.title.toUpperCase()}</h3>
-                <p className="font-body text-[#666] leading-relaxed">{step.description}</p>
+                <h3 className="font-display text-2xl text-[#1A1A1A] dark:text-[#F2F0EB] tracking-wider mb-4">{step.title.toUpperCase()}</h3>
+                <p className="font-body text-[#666] dark:text-[#888888] leading-relaxed">{step.description}</p>
               </div>
             </AnimatedSection>
           ))}
@@ -1131,7 +951,7 @@ function HowItWorks() {
         <AnimatedSection className="mt-12">
           <a
             href="#contact"
-            className="group inline-flex items-center gap-3 bg-transparent border border-[#1A1A1A] text-[#1A1A1A] font-body text-sm tracking-widest uppercase px-8 py-4 hover:border-[#00AEEF] hover:text-[#00AEEF] transition-all duration-300"
+            className="group inline-flex items-center gap-3 bg-transparent border border-[#1A1A1A] dark:border-[#F2F0EB] text-[#1A1A1A] dark:text-[#F2F0EB] font-body text-sm tracking-widest uppercase px-8 py-4 hover:border-[#00AEEF] hover:text-[#00AEEF] transition-all duration-300"
           >
             Start your project
             <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
@@ -1147,20 +967,20 @@ function HowItWorks() {
 // ============================================================
 function About() {
   return (
-    <section id="about" className="bg-[#F8F8F8] border-t border-[#E5E5E5] py-24">
+    <section id="about" className="bg-[#F8F8F8] dark:bg-[#111111] border-t border-[#E5E5E5] dark:border-[#1E1E1E] py-24 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           <AnimatedSection>
             <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase mb-6">Who we are</p>
-            <h2 className="font-display text-[clamp(2.5rem,5vw,4.5rem)] text-[#1A1A1A] tracking-wider leading-none mb-8">
+            <h2 className="font-display text-[clamp(2.5rem,5vw,4.5rem)] text-[#1A1A1A] dark:text-[#F2F0EB] tracking-wider leading-none mb-8">
               WORKSHOP-BUILT.<br />OWNER-RUN.<br />
-              <span className="text-[#999]">CAPE TOWN PROUD.</span>
+              <span className="text-[#999] dark:text-[#555555]">CAPE TOWN PROUD.</span>
             </h2>
-            <p className="font-body text-[#666] text-base leading-relaxed mb-8 max-w-lg">
+            <p className="font-body text-[#666] dark:text-[#888888] text-base leading-relaxed mb-8 max-w-lg">
               Just Branding is Neal, Melissa, and a team that genuinely cares about the work. Based in Killarney Gardens, we've been quietly building some of Cape Town's most recognisable brand presences: exhibitions, sites, vehicles, and everything in between.
             </p>
-            <p className="font-body text-[#666] text-base leading-relaxed max-w-lg">
+            <p className="font-body text-[#666] dark:text-[#888888] text-base leading-relaxed max-w-lg">
               No account managers. No middlemen. Just the people who actually make your stuff, from the first conversation to the final install.
             </p>
           </AnimatedSection>
@@ -1224,24 +1044,24 @@ function CTACloser() {
   };
 
   return (
-    <section id="contact" className="bg-white border-t border-[#E5E5E5] py-24">
+    <section id="contact" className="bg-white dark:bg-[#0D0D0D] border-t border-[#E5E5E5] dark:border-[#1E1E1E] py-24 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
 
           {/* Left copy */}
           <AnimatedSection>
             <p className="font-body text-[#00AEEF] text-xs tracking-[0.3em] uppercase mb-6">Get in touch</p>
-            <h2 className="font-display text-[clamp(3rem,6vw,5.5rem)] text-[#1A1A1A] tracking-wider leading-none mb-8">
+            <h2 className="font-display text-[clamp(3rem,6vw,5.5rem)] text-[#1A1A1A] dark:text-[#F2F0EB] tracking-wider leading-none mb-8">
               READY TO SHOW UP<br />
               <span className="text-[#00AEEF]">LIKE YOU</span><br />
               MEAN IT?
             </h2>
-            <p className="font-body text-[#666] text-base leading-relaxed mb-12 max-w-md">
+            <p className="font-body text-[#666] dark:text-[#888888] text-base leading-relaxed mb-12 max-w-md">
               Whether you've got a full brief or just an idea scrawled on a napkin, we'd love to hear about your project.
             </p>
 
             <div className="space-y-4">
-              <a href="tel:0215562501" className="flex items-center gap-4 text-[#666] hover:text-[#1A1A1A] transition-colors duration-300 font-body text-sm tracking-wider">
+              <a href="tel:0215562501" className="flex items-center gap-4 text-[#666] dark:text-[#888888] hover:text-[#1A1A1A] dark:hover:text-[#F2F0EB] transition-colors duration-300 font-body text-sm tracking-wider">
                 <span className="text-[#00AEEF] shrink-0" aria-hidden>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
@@ -1249,7 +1069,7 @@ function CTACloser() {
                 </span>
                 021 556 2501
               </a>
-              <a href="mailto:neal@justbranding.co.za" className="flex items-center gap-4 text-[#666] hover:text-[#1A1A1A] transition-colors duration-300 font-body text-sm tracking-wider">
+              <a href="mailto:neal@justbranding.co.za" className="flex items-center gap-4 text-[#666] dark:text-[#888888] hover:text-[#1A1A1A] dark:hover:text-[#F2F0EB] transition-colors duration-300 font-body text-sm tracking-wider">
                 <span className="text-[#00AEEF] shrink-0" aria-hidden>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -1258,7 +1078,7 @@ function CTACloser() {
                 </span>
                 neal@justbranding.co.za
               </a>
-              <a href="https://www.google.com/maps/search/79+Kyalami+Drive,+Killarney+Gardens,+7441" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-[#666] hover:text-[#1A1A1A] transition-colors duration-300 font-body text-sm tracking-wider">
+              <a href="https://www.google.com/maps/search/79+Kyalami+Drive,+Killarney+Gardens,+7441" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-[#666] dark:text-[#888888] hover:text-[#1A1A1A] dark:hover:text-[#F2F0EB] transition-colors duration-300 font-body text-sm tracking-wider">
                 <span className="text-[#00AEEF] shrink-0" aria-hidden>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -1287,7 +1107,7 @@ function CTACloser() {
                     { key: "phone", label: "Phone (optional)", type: "tel" },
                   ].map((field) => (
                     <div key={field.key}>
-                      <label className="font-body text-[#666] text-xs tracking-widest uppercase block mb-2">
+                      <label className="font-body text-[#666] dark:text-[#888888] text-xs tracking-widest uppercase block mb-2">
                         {field.label}
                       </label>
                       <input
@@ -1295,14 +1115,14 @@ function CTACloser() {
                         name={field.key}
                         value={formData[field.key]}
                         onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
-                        className="w-full bg-[#F5F5F5] border border-[#E5E5E5] text-[#1A1A1A] font-body text-sm px-4 py-3 focus:outline-none focus:border-[#00AEEF] transition-colors duration-300 placeholder-[#999]"
+                        className="w-full bg-[#F5F5F5] dark:bg-[#111111] border border-[#E5E5E5] dark:border-[#1E1E1E] text-[#1A1A1A] dark:text-[#F2F0EB] font-body text-sm px-4 py-3 focus:outline-none focus:border-[#00AEEF] transition-colors duration-300 placeholder-[#999] dark:placeholder-[#555555]"
                         placeholder={field.label}
                       />
                     </div>
                   ))}
 
                   <div>
-                    <label className="font-body text-[#666] text-xs tracking-widest uppercase block mb-2">
+                    <label className="font-body text-[#666] dark:text-[#888888] text-xs tracking-widest uppercase block mb-2">
                       What do you need?
                     </label>
                     <textarea
@@ -1310,7 +1130,7 @@ function CTACloser() {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       rows={4}
-                      className="w-full bg-[#F5F5F5] border border-[#E5E5E5] text-[#1A1A1A] font-body text-sm px-4 py-3 focus:outline-none focus:border-[#00AEEF] transition-colors duration-300 placeholder-[#999] resize-none"
+                      className="w-full bg-[#F5F5F5] dark:bg-[#111111] border border-[#E5E5E5] dark:border-[#1E1E1E] text-[#1A1A1A] dark:text-[#F2F0EB] font-body text-sm px-4 py-3 focus:outline-none focus:border-[#00AEEF] transition-colors duration-300 placeholder-[#999] dark:placeholder-[#555555] resize-none"
                       placeholder="Tell us about your project, deadline, and vision..."
                     />
                   </div>
@@ -1333,13 +1153,13 @@ function CTACloser() {
                   key="success"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="border border-[#00AEEF] bg-[#F8F8F8] p-12 text-center"
+                  className="border border-[#00AEEF] bg-[#F8F8F8] dark:bg-[#111111] dark:border-[#00AEEF] p-12 text-center"
                 >
                   <div className="w-12 h-12 border border-[#00AEEF] rounded-full flex items-center justify-center mx-auto mb-6">
                     <span className="text-[#00AEEF]">✓</span>
                   </div>
-                  <h3 className="font-display text-3xl text-[#1A1A1A] tracking-wider mb-4">WE'VE GOT IT.</h3>
-                  <p className="font-body text-[#666] leading-relaxed">
+                  <h3 className="font-display text-3xl text-[#1A1A1A] dark:text-[#F2F0EB] tracking-wider mb-4">WE'VE GOT IT.</h3>
+                  <p className="font-body text-[#666] dark:text-[#888888] leading-relaxed">
                     Neal or Melissa will be in touch shortly. Expect a real reply, not an auto-response.
                   </p>
                 </motion.div>
@@ -1478,19 +1298,20 @@ function Footer() {
 // MAIN LANDING PAGE COMPONENT
 // ============================================================
 export default function LandingPage() {
-  const [heroVariant, setHeroVariant] = useState(() =>
-    typeof window !== "undefined" && window.location.hash === "#home-v2" ? "light" : "dark"
-  );
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const theme = localStorage.getItem("theme");
+    return theme === "dark" || theme === "true";
+  });
 
   useEffect(() => {
-    const onHashChange = () => {
-      const isV2 = window.location.hash === "#home-v2";
-      setHeroVariant(isV2 ? "light" : "dark");
-      if (isV2) window.scrollTo(0, 0);
-    };
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
-  }, []);
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  }, [isDark]);
 
   const alternatingSections = [
     {
@@ -1556,7 +1377,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="bg-white min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="bg-white dark:bg-[#0D0D0D] min-h-screen transition-colors duration-300" style={{ fontFamily: "'DM Sans', sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
         .font-display { font-family: 'Bebas Neue', sans-serif; }
@@ -1568,8 +1389,8 @@ export default function LandingPage() {
         ::-webkit-scrollbar-thumb { background: #00AEEF; }
       `}</style>
 
-      <Nav />
-      {heroVariant === "dark" ? <HeroDark /> : <Hero />}
+      <Nav isDark={isDark} setIsDark={setIsDark} />
+      <Hero isDark={isDark} />
       <ServicesGrid />
 
       {alternatingSections.map((section, i) => (
